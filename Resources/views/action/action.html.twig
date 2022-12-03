@@ -1,0 +1,13 @@
+{# @var config \Padam87\AdminBundle\Config\AdminConfig #}
+{# @var action \Padam87\AdminBundle\Config\Action\Action #}
+{# @var entity ?object #}
+
+<{{ action.control.tagName }}
+    {{ action.control.tagName == 'a' ? 'href' : 'formaction' }}={{ path(action.routeName, action.routeParameters(entity ?? null)) }}
+    {% for name, value in action.control.attributes %}{{ name }}="{{ value|escape('html_attr') }}"{% endfor %}
+>
+{% if action.icon %}
+    {% include '@Padam87Admin/icon.html.twig' with { icon: action.icon } only %}
+{% endif %}
+    {{ action.title|trans({ '%entity%' : config.singularName|trans }) }}
+</{{ action.control.tagName }}>

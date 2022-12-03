@@ -1,0 +1,8 @@
+{# @var config \Padam87\AdminBundle\Config\AdminConfig #}
+{# @var action \Padam87\AdminBundle\Config\Action\SubmittedAction #}
+
+<form method="POST" style="display: inline-block;">
+    <input type="hidden" name="_method" value="{{ action.method }}" />
+
+    {% include '@Padam87Admin/action/action.html.twig' %}
+</form>

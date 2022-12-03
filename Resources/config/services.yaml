@@ -1,0 +1,34 @@
+services:
+  Padam87\AdminBundle\Config\AdminConfigFactory:
+    arguments:
+      $config: '%padam87_admin.config%'
+      $nameConverter: '@serializer.name_converter.camel_case_to_snake_case'
+
+  Padam87\AdminBundle\Config\Table\TableFactory:
+    arguments:
+      $config: '%padam87_admin.config%'
+      $formFactory: '@Symfony\Component\Form\FormFactoryInterface'
+
+  Padam87\AdminBundle\Routing\AdminLoader:
+    arguments:
+      $env: '%kernel.environment%'
+      $controllers: !tagged_iterator padam87_admin.controller
+    tags: [routing.loader]
+
+  Padam87\AdminBundle\Form\Extension\LabelExtension:
+    arguments:
+      $converter: '@serializer.name_converter.camel_case_to_snake_case'
+    tags: [form.type_extension]
+
+  Padam87\AdminBundle\Translation\AdminExtractor:
+    arguments:
+      $admins: !tagged padam87_admin.controller
+      $factory: '@Symfony\Component\Form\FormFactoryInterface'
+      $logger: '@Psr\Log\LoggerInterface'
+    tags:
+      - { name: translation.extractor, alias: admin }
+
+  Padam87\AdminBundle\Twig\AdminExtension:
+    arguments:
+      $controllers: !tagged_iterator padam87_admin.controller
+    tags: [twig.extension]

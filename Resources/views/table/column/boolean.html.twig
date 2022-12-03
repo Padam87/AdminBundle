@@ -1,0 +1,6 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\Column #}
+{# @var entity object #}
+
+{% trans_default_domain 'padam87_admin' %}
+
+{{- column.value(entity) ? 'boolean.true'|trans : 'boolean.false'|trans -}}

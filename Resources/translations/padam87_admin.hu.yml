@@ -1,0 +1,12 @@
+flash:
+  create:
+    success: 'Sikeres mentés.'
+  edit:
+    success: 'Sikeres mentés.'
+  delete:
+    success: 'Sikeres törlés.'
+    failure.%id%.%entity%: 'Sikertelen törlés - az entitás már valószínűleg használatban van: #%id% - %entity%'
+
+boolean:
+  'true': Igen
+  'false': Nem

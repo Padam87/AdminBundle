@@ -1,0 +1,7 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\DateTimeColumn #}
+{# @var entity object #}
+
+{% set value = column.value(entity) %}
+{% if value -%}
+    <time datetime="{{- value|date('c') -}}">{{- value|date(column.format) -}}</time>
+{%- endif %}

@@ -1,0 +1,4 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\TranslatedColumn #}
+{# @var entity object #}
+
+{{- column.value(entity)|trans(column.translationParameters, column.translationDomain) -}}
