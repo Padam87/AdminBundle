@@ -1,0 +1,28 @@
+{
+  "name": "padam87/admin-bundle",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "description": "Symfony admin bundle.",
+  "keywords": [
+    "symfony",
+    "admin",
+    "crud"
+  ],
+  "authors": [
+    {
+      "name": "Adam Prager",
+      "email": "prager.adam87@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Padam87\\AdminBundle\\": ""
+    }
+  },
+  "require": {
+    "php": "^8.1",
+    "symfony/framework-bundle": "^6.0",
+    "doctrine/orm": "^2.3",
+    "knplabs/knp-paginator-bundle": "^5.0"
+  }
+}
