@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -176,6 +177,10 @@ abstract class AdminController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        if (!$this->config->getAction(Action::EDIT)->isEnabledFor($entity)) {
+            throw $this->createNotFoundException();
+        }
+
         if (true === $data = $this->upsert($entity)) {
             return $this->redirectToRoute($this->config->getRouteNameForAction(Action::INDEX));
         }
@@ -261,7 +266,11 @@ abstract class AdminController extends AbstractController
         $selected = $request->request->all('selected');
 
         foreach ($selected as $id) {
-            $this->deleteEntity($id);
+            try {
+                $this->deleteEntity($id);
+            } catch (NotFoundHttpException) {
+                continue;
+            }
         }
 
         return $this->redirectToRoute($this->config->getRouteNameForAction(Action::INDEX));
@@ -272,6 +281,10 @@ abstract class AdminController extends AbstractController
         $em = $this->container->get('doctrine')->getManager();
 
         if (null === $entity = $em->find($this->getEntityFqcn(), $id)) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->config->getAction(Action::DELETE)->isEnabledFor($entity)) {
             throw $this->createNotFoundException();
         }
 

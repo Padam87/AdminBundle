@@ -2,12 +2,20 @@
 {# @var action \Padam87\AdminBundle\Config\Action\Action #}
 {# @var entity ?object #}
 
+{% set attr = action.control.attributes %}
+{% if entity is defined and not action.isEnabledFor(entity) %}
+    {% set attr = attr|merge({disabled: 'disabled'}) %}
+    {% set attr = attr|merge({class: attr.class|default('') ~ ' disabled'}) %}
+{% endif %}
+
 <{{ action.control.tagName }}
     {{ action.control.tagName == 'a' ? 'href' : 'formaction' }}={{ path(action.routeName, action.routeParameters(entity ?? null)) }}
-    {% for name, value in action.control.attributes %}{{ name }}="{{ value|escape('html_attr') }}"{% endfor %}
+    {% for name, value in attr %}{{ name }}="{{ value|escape('html_attr') }}"{% endfor %}
 >
 {% if action.icon %}
     {% include '@Padam87Admin/icon.html.twig' with { icon: action.icon } only %}
 {% endif %}
+{% if action.title %}
     {{ action.title|trans({ '%entity%' : config.singularName|trans }) }}
+{% endif %}
 </{{ action.control.tagName }}>
