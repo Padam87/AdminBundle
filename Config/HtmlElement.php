@@ -8,6 +8,11 @@ class HtmlElement
     {
     }
 
+    public static function fromConfiguration(array $config): static
+    {
+        return new static($config['element'], $config['attributes']);
+    }
+
     public function getTagName(): string
     {
         return $this->tagName;
