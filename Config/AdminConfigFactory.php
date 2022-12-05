@@ -38,6 +38,7 @@ class AdminConfigFactory
             )
             ->addAction(
                 Action::create(Action::EDIT, Action::TYPE_ENTITY)
+                    ->setTitle('admin.action.edit')
                     ->setRouteName($config->getRouteNameForAction(Action::EDIT))
                     ->setRouteParameters(fn($entity) => ['id' => $entity->getId()])
                     ->setControl(new HtmlElement('a', ['class' => 'btn btn-secondary']))
@@ -45,10 +46,11 @@ class AdminConfigFactory
             )
             ->addAction(
                 SubmittedAction::create(Action::DELETE, Action::TYPE_ENTITY)
+                    ->setTitle('admin.action.delete')
                     ->setMethod('DELETE')
                     ->setRouteName($config->getRouteNameForAction(Action::DELETE))
                     ->setRouteParameters(fn($entity) => ['id' => $entity->getId()])
-                    ->setControl(new HtmlElement('button', ['class' => 'btn btn-danger btn-sm', 'type' => 'submit']))
+                    ->setControl(new HtmlElement('button', ['class' => 'btn btn-danger', 'type' => 'submit']))
                     ->setIcon(new HtmlElement('i', ['class' => 'bi bi-trash']))
             )
             ->addAction(
