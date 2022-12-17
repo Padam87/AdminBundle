@@ -135,7 +135,7 @@ class AdminConfigFactory
                 requirements: [
                     '_method' => 'DELETE',
                 ],
-                methods: ['POST'],
+                methods: ['DELETE'],
             )
         );
 
@@ -146,9 +146,6 @@ class AdminConfigFactory
                 defaults: [
                     '_controller' => $controllerFqcn.'::__'.Action::BATCH_DELETE,
                     '_action' => Action::BATCH_DELETE,
-                ],
-                requirements: [
-                    '_method' => 'DELETE',
                 ],
                 methods: ['POST'],
             )
