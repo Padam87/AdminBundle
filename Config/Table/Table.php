@@ -75,6 +75,10 @@ class Table
             $column->setTitle(str_replace('%name%', (new CamelCaseToSnakeCaseNameConverter())->normalize($column->getProperty()), $this->labelFormat));
         }
 
+        if ($column->getSortable() === true) {
+            $column->setSortable($this->getQueryAlias() . '.' . $column->getProperty());
+        }
+
         $this->columns[$column->getProperty()] = $column;
 
         return $this;

@@ -19,6 +19,8 @@ class Column
 
     protected array $filters = [];
 
+    protected bool|string $sortable = true;
+
     public static function create(string $property): static
     {
         return new static($property);
@@ -111,6 +113,18 @@ class Column
     public function setFilters(array $filters): self
     {
         $this->filters = $filters;
+
+        return $this;
+    }
+
+    public function getSortable(): bool|string
+    {
+        return $this->sortable;
+    }
+
+    public function setSortable(bool|string $sortable): self
+    {
+        $this->sortable = $sortable;
 
         return $this;
     }
