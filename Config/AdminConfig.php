@@ -84,6 +84,13 @@ class AdminConfig
         return $this;
     }
 
+    public function setTemplate(string $action, string $template): self
+    {
+        $this->templates[$action] = $template;
+
+        return $this;
+    }
+
     public function getBaseRoute(): Route
     {
         return $this->baseRoute;
