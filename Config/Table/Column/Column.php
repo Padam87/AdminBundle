@@ -29,10 +29,7 @@ class Column
     public function __construct(string $property)
     {
         $this->property = $property;
-
-        $this->getter = function (object $entity) use ($property) {
-            return (new PropertyAccessorBuilder())->getPropertyAccessor()->getValue($entity, $property);
-        };
+        $this->getter = (new ValueAccessor($property))(...);
     }
 
     public function getTemplate(string $format = 'html'): Template|string
@@ -100,7 +97,7 @@ class Column
         return $this;
     }
 
-    public function getValue(object $entity)
+    public function getValue(object|array $entity)
     {
         return ($this->getter)($entity);
     }
