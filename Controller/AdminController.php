@@ -15,6 +15,7 @@ use Padam87\AdminBundle\Config\Table\TableFactory;
 use Padam87\FormFilterBundle\Service\Filters;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -155,8 +156,10 @@ abstract class AdminController extends AbstractController
 
     public function __create(): Response
     {
-        if (true === $data = $this->upsert()) {
-            return $this->redirectToRoute($this->config->getRouteNameForAction(Action::INDEX));
+        $entity = $this->createEntity();
+
+        if (true === $data = $this->upsert($entity)) {
+            return $this->after(Action::CREATE, $entity);
         }
 
         return $this->render(
@@ -182,7 +185,7 @@ abstract class AdminController extends AbstractController
         }
 
         if (true === $data = $this->upsert($entity)) {
-            return $this->redirectToRoute($this->config->getRouteNameForAction(Action::INDEX));
+            return $this->after(Action::EDIT, $entity);
         }
 
         return $this->render(
@@ -194,13 +197,9 @@ abstract class AdminController extends AbstractController
         );
     }
 
-    protected function upsert(&$entity = null, &$success = null): array|bool
+    protected function upsert($entity): array|bool
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
-
-        if ($entity === null) {
-            $entity = $this->createEntity($request);
-        }
 
         $form = $this->createDataForm($entity);
 
@@ -220,7 +219,7 @@ abstract class AdminController extends AbstractController
         ];
     }
 
-    protected function createEntity(Request $request): object
+    protected function createEntity(): object
     {
         $fqcn = $this->getEntityFqcn();
 
@@ -234,7 +233,7 @@ abstract class AdminController extends AbstractController
         $em->flush();
     }
 
-    protected function createDataForm(object $entity): FormInterface
+    protected function createDataForm($entity): FormInterface
     {
         if ($this->getFormFqcn($entity) === null) {
             throw new \LogicException('No data form specified');
@@ -258,7 +257,7 @@ abstract class AdminController extends AbstractController
     {
         $this->deleteEntity($request->get('id'));
 
-        return $this->redirectToRoute($this->config->getRouteNameForAction(Action::INDEX));
+        return $this->after(Action::DELETE);
     }
 
     public function __batchDelete(Request $request): Response
@@ -273,7 +272,7 @@ abstract class AdminController extends AbstractController
             }
         }
 
-        return $this->redirectToRoute($this->config->getRouteNameForAction(Action::INDEX));
+        return $this->after(Action::BATCH_DELETE);
     }
 
     protected function deleteEntity($id)
@@ -311,5 +310,10 @@ abstract class AdminController extends AbstractController
         $request = $this->container->get('request_stack')->getCurrentRequest();
 
         return $this->redirect($request->headers->get('referer'));
+    }
+
+    protected function after(string $action, $entity = null): Response
+    {
+        return $this->redirectToRoute($this->config->getRouteNameForAction(Action::INDEX));
     }
 }
