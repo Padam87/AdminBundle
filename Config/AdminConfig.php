@@ -13,6 +13,8 @@ class AdminConfig
 
     private array $templates;
 
+    private array $viewVariables = [];
+
     private Route $baseRoute;
 
     private RouteCollection $routes;
@@ -89,6 +91,33 @@ class AdminConfig
         $this->templates[$action] = $template;
 
         return $this;
+    }
+
+    public function getViewVariables(): array
+    {
+        return $this->viewVariables;
+    }
+
+    public function setViewVariables(array $viewVariables): self
+    {
+        $this->viewVariables = $viewVariables;
+
+        return $this;
+    }
+
+    public function addViewVariable(?string $action, string $name, mixed $value): self
+    {
+        $this->viewVariables[$action][$name] = $value;
+
+        return $this;
+    }
+
+    public function getViewVariablesForAction(string $action): array
+    {
+        return array_merge(
+            $this->viewVariables[null] ?? [],
+            $this->viewVariables[$action] ?? [],
+        );
     }
 
     public function getBaseRoute(): Route

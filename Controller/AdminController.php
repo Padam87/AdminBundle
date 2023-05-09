@@ -83,6 +83,7 @@ abstract class AdminController extends AbstractController
                 'pagination' => $this->paginate($table, $filters),
                 'filters' => $filters->createView(),
                 'set' => $request->query->get('set'),
+                ...$this->config->getViewVariablesForAction(Action::INDEX),
             ]
         );
     }
@@ -167,6 +168,7 @@ abstract class AdminController extends AbstractController
             [
                 ...$data,
                 'config' => $this->config,
+                ...$this->config->getViewVariablesForAction(Action::CREATE),
             ]
         );
     }
@@ -193,6 +195,7 @@ abstract class AdminController extends AbstractController
             [
                 ...$data,
                 'config' => $this->config,
+                ...$this->config->getViewVariablesForAction(Action::EDIT),
             ]
         );
     }
