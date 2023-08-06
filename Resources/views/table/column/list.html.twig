@@ -1,0 +1,11 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\DateTimeColumn #}
+{# @var entity object #}
+
+{% set value = column.value(entity) %}
+{% if value -%}
+    <{{ column.ordered ? 'ol' : 'ul' }}>
+        {% for item in value %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </{{ column.ordered ? 'ol' : 'ul' }}>
+{%- endif %}
