@@ -123,7 +123,10 @@ class Configuration implements ConfigurationInterface
     private function addConfig(NodeBuilder $current, $name, $value)
     {
         if (is_array($value)) {
-            $node = $current->arrayNode($name)->addDefaultsIfNotSet();
+            $node = $current->arrayNode($name)
+                ->addDefaultsIfNotSet()
+                ->ignoreExtraKeys(false)
+            ;
 
             foreach ($value as $k => $v) {
                 $this->addConfig($node->children(), $k, $v);

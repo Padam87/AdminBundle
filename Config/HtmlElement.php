@@ -4,8 +4,30 @@ namespace Padam87\AdminBundle\Config;
 
 class HtmlElement
 {
-    public function __construct(private string $tagName, private array $attributes = [])
+    private array $attributes = [];
+
+    public function __construct(private string $tagName, array $attributes = [])
     {
+        foreach ($attributes as $k => $v) {
+            if (is_array($v)) {
+                $this->attributes = array_merge($this->attributes, $this->normalizeAttribute($v, $k));
+            } else {
+                $this->attributes[$k] = $v;
+            }
+        }
+    }
+
+    function normalizeAttribute($array, $prefix = '') {
+        $result = [];
+
+        foreach($array as $key=>$value) {
+            if(is_array($value)) {
+                $result = $result + flatten($value, $prefix . '-'. $key );
+            } else {
+                $result[$prefix . '-'. $key ] = $value;
+            }
+        }
+        return $result;
     }
 
     public static function fromConfiguration(array $config): static
