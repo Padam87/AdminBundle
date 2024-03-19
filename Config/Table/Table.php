@@ -3,6 +3,7 @@
 namespace Padam87\AdminBundle\Config\Table;
 
 use Padam87\AdminBundle\Config\Table\Column\Column;
+use Padam87\AdminBundle\Config\Table\Column\CombinedColumn;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
@@ -69,7 +70,7 @@ class Table
         return $this->columns;
     }
 
-    public function addColumn(Column $column): self
+    public function prepareColumn(Column $column): Column
     {
         if ($column->getTitle() === null) {
             $column->setTitle(str_replace('%name%', (new CamelCaseToSnakeCaseNameConverter())->normalize($column->getProperty()), $this->labelFormat));
@@ -79,7 +80,18 @@ class Table
             $column->setSortable($this->getQueryAlias() . '.' . $column->getProperty());
         }
 
-        $this->columns[$column->getProperty()] = $column;
+        if ($column instanceof CombinedColumn) {
+            foreach ($column->getParts() as $part) {
+                $this->prepareColumn($part);
+            }
+        }
+
+        return $column;
+    }
+
+    public function addColumn(Column $column): self
+    {
+        $this->columns[$column->getProperty()] = $this->prepareColumn($column);
 
         return $this;
     }

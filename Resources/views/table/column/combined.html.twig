@@ -1,0 +1,11 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\CombinedColumn #}
+{# @var entity object #}
+
+{% set entity = column.value(entity) %}
+
+{% for part in column.parts %}
+    <div class="combined-column__part">
+        {% set blockName = ('part_' ~ part.property)|replace({'.': '_'}) %}
+        {{ block(blockName) ?? include(part.template, { column: part, entity }, false) }}
+    </div>
+{% endfor %}
