@@ -8,16 +8,16 @@ use Twig\Template;
 
 class Action
 {
-    const INDEX = 'index';
-    const CREATE = 'create';
-    const EDIT = 'edit';
-    const DELETE = 'delete';
-    const BATCH_DELETE = 'batchDelete';
+    public const INDEX = 'index';
+    public const CREATE = 'create';
+    public const EDIT = 'edit';
+    public const DELETE = 'delete';
+    public const BATCH_DELETE = 'batchDelete';
 
-    const TYPE_GLOBAL = 'global';
-    const TYPE_ENTITY = 'entity';
-    const TYPE_BATCH = 'batch';
-    const TYPE_TABLE = 'table';
+    public const TYPE_GLOBAL = 'global';
+    public const TYPE_ENTITY = 'entity';
+    public const TYPE_BATCH = 'batch';
+    public const TYPE_TABLE = 'table';
 
     private string $routeName;
 

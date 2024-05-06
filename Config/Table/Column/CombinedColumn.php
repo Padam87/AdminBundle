@@ -12,7 +12,7 @@ class CombinedColumn extends Column
     {
         parent::__construct($property);
 
-        $this->getter = function (object|array $entity) {
+        $this->getter = function (object|array $entity): object|array {
             return $entity;
         };
     }

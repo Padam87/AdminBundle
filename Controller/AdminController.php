@@ -42,9 +42,9 @@ abstract class AdminController extends AbstractController
         );
     }
 
-    public function init(AdminConfigFactory $configFactory)
+    public function init(AdminConfigFactory $configFactory): void
     {
-        $config = $configFactory->create(get_class($this), $this->getEntityFqcn());
+        $config = $configFactory->create(static::class, $this->getEntityFqcn());
         $this->configure($config);
         $this->config = $config;
     }
@@ -109,7 +109,7 @@ abstract class AdminController extends AbstractController
 
     protected function createFilterForm(Table $table): ?FormInterface
     {
-        if (!$table->getFilters()) {
+        if ($table->getFilters() === null) {
             return null;
         }
 
@@ -133,7 +133,7 @@ abstract class AdminController extends AbstractController
 
         $qb = $this->createQueryBuilder($table);
 
-        if ($filters) {
+        if ($filters !== null) {
             $this->container->get(Filters::class)->apply($qb, $filters);
         }
 
@@ -308,7 +308,7 @@ abstract class AdminController extends AbstractController
         }
     }
 
-    protected function redirectToReferer()
+    protected function redirectToReferer(): RedirectResponse
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
 

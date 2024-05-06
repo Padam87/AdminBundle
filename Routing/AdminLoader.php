@@ -13,7 +13,7 @@ class AdminLoader extends Loader
         parent::__construct($env);
     }
 
-    public function load(mixed $resource, string $type = null)
+    public function load(mixed $resource, string $type = null): mixed
     {
         $routes = new RouteCollection();
 
@@ -25,7 +25,7 @@ class AdminLoader extends Loader
         return $routes;
     }
 
-    public function supports(mixed $resource, string $type = null)
+    public function supports(mixed $resource, string $type = null): bool
     {
         return 'padam87_admin' === $type;
     }

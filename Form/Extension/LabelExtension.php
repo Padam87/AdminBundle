@@ -17,7 +17,7 @@ class LabelExtension extends AbstractTypeExtension
         $this->converter = $converter;
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['name_underscored'] = $this->converter->normalize($view->vars['name']);
 
@@ -25,7 +25,7 @@ class LabelExtension extends AbstractTypeExtension
             $view->vars['label'] = str_replace(
                 ['%name%', '%name_underscored%'],
                 [$view->vars['name'], $view->vars['name_underscored']],
-                $view->vars['label_format']
+                (string) $view->vars['label_format']
             );
         }
     }

@@ -26,7 +26,7 @@ class AdminExtractor implements ExtractorInterface
         $this->logger = $logger;
     }
 
-    public function extract($resource, MessageCatalogue $catalogue)
+    public function extract($resource, MessageCatalogue $catalogue): void
     {
         if (!$this->ran) {
             /** @var AdminController $controller */
@@ -40,12 +40,12 @@ class AdminExtractor implements ExtractorInterface
         }
     }
 
-    public function setPrefix($prefix)
+    public function setPrefix($prefix): void
     {
         $this->prefix = $prefix;
     }
 
-    private function addMessage(TranslatableMessage|string|null $message, MessageCatalogue $catalogue)
+    private function addMessage(TranslatableMessage|string|null $message, MessageCatalogue $catalogue): void
     {
         if ($message === null) {
             return;
@@ -109,7 +109,7 @@ class AdminExtractor implements ExtractorInterface
 
             $labels = $this->extractView($form->createView());
         } catch (\Throwable $e) {
-            $this->logger->warning(sprintf('[%s] [%s] %s', get_class($controller), $type, $e->getMessage()));
+            $this->logger->warning(sprintf('[%s] [%s] %s', $controller::class, $type, $e->getMessage()));
 
             return;
         }

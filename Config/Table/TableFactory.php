@@ -23,7 +23,7 @@ class TableFactory
         $table = new Table();
 
         $table->setLabelFormat((new CamelCaseToSnakeCaseNameConverter())->normalize($refl->getShortName()) . '.%name%');
-        $table->setQueryAlias(strtolower(preg_replace('/[a-z]/', '', $refl->getShortName())));
+        $table->setQueryAlias(strtolower((string) preg_replace('/[a-z]/', '', $refl->getShortName())));
         $table->setFilters($this->createFilters());
 
         return $table;

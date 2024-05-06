@@ -17,12 +17,12 @@ class HtmlElement
         }
     }
 
-    function normalizeAttribute($array, $prefix = '') {
+    function normalizeAttribute($array, string $prefix = ''): array {
         $result = [];
 
         foreach($array as $key=>$value) {
             if(is_array($value)) {
-                $result = $result + flatten($value, $prefix . '-'. $key );
+                $result += flatten($value, $prefix . '-'. $key );
             } else {
                 $result[$prefix . '-'. $key ] = $value;
             }

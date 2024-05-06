@@ -9,11 +9,11 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 
 class Table
 {
-    private ?string $labelFormat;
+    private ?string $labelFormat = null;
 
     private int $itemsPerPage = 10;
 
-    private ?string $queryAlias;
+    private ?string $queryAlias = null;
 
     private array $columns = [];
 
@@ -73,7 +73,7 @@ class Table
     public function prepareColumn(Column $column): Column
     {
         if ($column->getTitle() === null) {
-            $column->setTitle(str_replace('%name%', (new CamelCaseToSnakeCaseNameConverter())->normalize($column->getProperty()), $this->labelFormat));
+            $column->setTitle(str_replace('%name%', (new CamelCaseToSnakeCaseNameConverter())->normalize($column->getProperty()), (string) $this->labelFormat));
         }
 
         if ($column->getSortable() === true) {
@@ -111,7 +111,7 @@ class Table
     public function addFilterSet(FilterSet $set): self
     {
         if ($set->getName() === null) {
-            $set->setName(str_replace('%name%', 'filter_set.' . $set->getKey(), $this->labelFormat));
+            $set->setName(str_replace('%name%', 'filter_set.' . $set->getKey(), (string) $this->labelFormat));
         }
 
         $this->filterSets[$set->getKey()] = $set;

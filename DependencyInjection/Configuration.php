@@ -11,7 +11,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
-    private static $actionConfig = [
+    private static array $actionConfig = [
         Action::CREATE => [
             'control' => [
                 'element' => 'a',
@@ -76,7 +76,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('padam87_admin');
 
@@ -120,7 +120,7 @@ class Configuration implements ConfigurationInterface
         return $node;
     }
 
-    private function addConfig(NodeBuilder $current, $name, $value)
+    private function addConfig(NodeBuilder $current, string $name, $value): void
     {
         if (is_array($value)) {
             $node = $current->arrayNode($name)
