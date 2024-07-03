@@ -4,8 +4,11 @@
 {% set entity = column.value(entity) %}
 
 {% for part in column.parts %}
-    <div class="combined-column__part">
-        {% set blockName = ('part_' ~ part.property)|replace({'.': '_'}) %}
-        {{ block(blockName) ?? include(part.template, { column: part, entity }, false) }}
-    </div>
+<dl>
+    <dt>{{ part.title|trans }}</dt>
+    <dd>
+        {% set blockName = ('part_' ~ part.property)|replace({ '.': '_', '?': '' }) %}
+        {{ block(blockName, parentTemplate) ?? include(part.template, { column: part, entity, parentTemplate }, false) }}
+    </dd>
+</dl>
 {% endfor %}
