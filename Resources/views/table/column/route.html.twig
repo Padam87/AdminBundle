@@ -1,0 +1,12 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\RouteColumn #}
+{# @var entity object #}
+
+{% set value = column.value(entity) %}
+{% set route = column.route(entity) %}
+{% if value -%}
+    {% if route -%}
+        <a href="{{ path(route.name, route.parameters, route.reference_type) }}" title="{{ value }}">{{ value }}</a>
+    {%- else -%}
+        {{ value }}
+    {%- endif %}
+{%- endif %}

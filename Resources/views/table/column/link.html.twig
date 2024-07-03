@@ -1,0 +1,7 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\LinkColumn #}
+{# @var entity object #}
+
+{% set value = column.value(entity) %}
+{% if value -%}
+    <a href="{{ column.url }}" title="{{ value }}">{{ value }}</a>
+{%- endif %}
