@@ -16,6 +16,6 @@
     {% include '@Padam87Admin/icon.html.twig' with { icon: action.icon } only %}
 {% endif %}
 {% if action.title %}
-    {{ action.title|trans({ '%entity%' : config.singularName|trans }) }}
+    {{ action.title|trans }}
 {% endif %}
 </{{ action.control.tagName }}>

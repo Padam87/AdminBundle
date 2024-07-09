@@ -3,6 +3,7 @@ services:
     arguments:
       $config: '%padam87_admin.config%'
       $nameConverter: '@serializer.name_converter.camel_case_to_snake_case'
+      $translator: '@translator'
 
   Padam87\AdminBundle\Config\Table\TableFactory:
     arguments:

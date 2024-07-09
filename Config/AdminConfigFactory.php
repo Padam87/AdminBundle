@@ -8,12 +8,15 @@ use Symfony\Component\Routing\Annotation\Route as RouteAnnotation;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
+use Symfony\Component\Translation\TranslatableMessage;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AdminConfigFactory
 {
     public function __construct(
         private array $config,
-        private NameConverterInterface $nameConverter
+        private NameConverterInterface $nameConverter,
+        private TranslatorInterface $translator
     ) {
     }
 
@@ -31,7 +34,7 @@ class AdminConfigFactory
             ->setRoutes($this->getRoutes($controllerFqcn))
             ->addAction(
                 Action::create(Action::CREATE, Action::TYPE_GLOBAL)
-                    ->setTitle('admin.action.create.%entity%')
+                    ->setTitle(new TranslatableMessage('admin.action.create.%entity%', ['%entity%' => $this->translator->trans($config->getSingularName())]))
                     ->setRouteName($config->getRouteNameForAction(Action::CREATE))
                     ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::CREATE]['control']))
                     ->setIcon(HtmlElement::fromConfiguration($this->config['actions'][Action::CREATE]['icon']))
