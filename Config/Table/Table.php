@@ -20,7 +20,7 @@ class Table
     private ?FormBuilderInterface $filters = null;
 
     /**
-     * @var FilterSet[]
+     * @var FilterSet[][]
      */
     private array $filterSets = [];
 
@@ -114,17 +114,22 @@ class Table
             $set->setName(str_replace('%name%', 'filter_set.' . $set->getKey(), (string) $this->labelFormat));
         }
 
-        $this->filterSets[$set->getKey()] = $set;
+        $this->filterSets[$set->getGroup()][$set->getKey()] = $set;
 
         return $this;
     }
 
     /**
-     * @return FilterSet[]
+     * @return FilterSet[][]
      */
     public function getFilterSets(): array
     {
         return $this->filterSets;
+    }
+
+    public function getFilterSet(string $key, string $group = FilterSet::DEFAULT_GROUP): ?FilterSet
+    {
+        return $this->filterSets[$group][$key];
     }
 
     public function getPaginatorOptions(): array

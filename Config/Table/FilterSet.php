@@ -7,11 +7,15 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 class FilterSet
 {
+    public const DEFAULT_GROUP = 'default';
+
     private TranslatableMessage|string|null $name = null;
 
     private ?HtmlElement $icon = null;
 
     private array $data = [];
+
+    private string $group = self::DEFAULT_GROUP;
 
     public static function create(string $key): static
     {
@@ -66,6 +70,18 @@ class FilterSet
     public function setData(array $data): self
     {
         $this->data = $data;
+
+        return $this;
+    }
+
+    public function getGroup(): string
+    {
+        return $this->group;
+    }
+
+    public function setGroup(string $group): self
+    {
+        $this->group = $group;
 
         return $this;
     }
