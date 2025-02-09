@@ -11,9 +11,9 @@ class Column
 
     protected ?string $title = null;
 
-    protected array $headerClasses = [];
+    protected array $headerAttributes = [];
 
-    protected array $cellClasses = [];
+    protected array $cellAttributes = [];
 
     protected \Closure $getter;
 
@@ -61,26 +61,32 @@ class Column
         return $this;
     }
 
-    public function getHeaderClasses(): array
+    public function getHeaderAttributes(): array
     {
-        return $this->headerClasses;
+        return $this->headerAttributes;
     }
 
-    public function setHeaderClasses(array $headerClasses): self
+    public function setHeaderAttributes(array $headerAttributes): self
     {
-        $this->headerClasses = $headerClasses;
+        $this->headerAttributes = $headerAttributes;
 
         return $this;
     }
 
-    public function getCellClasses(): array
+    public function getCellAttributes(object|array $entity): array
     {
-        return $this->cellClasses;
+        return array_filter(array_map(function (mixed $value) use ($entity) {
+            if (is_callable($value)) {
+                return $value($entity);
+            }
+
+            return $value;
+        }, $this->cellAttributes));
     }
 
-    public function setCellClasses(array $cellClasses): self
+    public function setCellAttributes(array $cellAttributes): self
     {
-        $this->cellClasses = $cellClasses;
+        $this->cellAttributes = $cellAttributes;
 
         return $this;
     }
