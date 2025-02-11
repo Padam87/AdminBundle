@@ -307,7 +307,7 @@ abstract class AdminController extends AbstractController
             $this->addFlash(
                 'danger',
                 $this->container->get('translator')->trans(
-                    'flash.delete.failure.%id%.%entity%',
+                    'flash.delete.failure',
                     [
                         '%id%' => $id,
                         '%entity%' => $entity instanceof \Stringable ? (string) $entity : '',
