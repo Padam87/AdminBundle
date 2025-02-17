@@ -171,6 +171,8 @@ abstract class AdminController extends AbstractController
 
         if (true === $data = $this->upsert($entity)) {
             return $this->after(Action::CREATE, $entity);
+        } else {
+            $this->saveFailed(Action::CREATE, $entity);
         }
 
         return $this->render(
@@ -198,6 +200,10 @@ abstract class AdminController extends AbstractController
 
         if (true === $data = $this->upsert($entity)) {
             return $this->after(Action::EDIT, $entity);
+        } else {
+            if (null !== $saveFailed = $this->saveFailed(Action::EDIT, $entity)) {
+                return $saveFailed;
+            }
         }
 
         return $this->render(
@@ -244,6 +250,13 @@ abstract class AdminController extends AbstractController
         $em = $this->container->get('doctrine')->getManager();
         $em->persist($entity);
         $em->flush();
+    }
+
+    protected function saveFailed(string $action, object $entity): ?Response
+    {
+        $this->addFlash('danger', $this->container->get('translator')->trans('flash.save.failure', [], 'padam87_admin'));
+
+        return null;
     }
 
     protected function createDataForm($entity): FormInterface

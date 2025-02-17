@@ -1,10 +1,7 @@
 flash:
-  create:
-    success: 'Sikeres mentés.'
-  edit:
-    success: 'Sikeres mentés.'
+  save:
+    failure: 'Sikertelen mentés.'
   delete:
-    success: 'Sikeres törlés.'
     failure: 'Sikertelen törlés - az entitás már valószínűleg használatban van: #%id% - %entity%'
 
 boolean:
