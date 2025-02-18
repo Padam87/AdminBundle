@@ -171,8 +171,6 @@ abstract class AdminController extends AbstractController
 
         if (true === $data = $this->upsert($entity)) {
             return $this->after(Action::CREATE, $entity);
-        } else {
-            $this->saveFailed(Action::CREATE, $entity);
         }
 
         return $this->render(
