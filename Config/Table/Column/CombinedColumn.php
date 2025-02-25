@@ -15,6 +15,8 @@ class CombinedColumn extends Column
         $this->getter = function (object|array $entity): object|array {
             return $entity;
         };
+
+        $this->sortable = false;
     }
 
     public function getTemplate(string $format = 'html'): Template|string
@@ -43,5 +45,10 @@ class CombinedColumn extends Column
         $this->parts[$part->getProperty()] = $part;
 
         return $this;
+    }
+
+    public function isCombined(): bool
+    {
+        return true;
     }
 }

@@ -131,4 +131,9 @@ class Column
 
         return $this;
     }
+
+    public function isCombined(): bool
+    {
+        return false;
+    }
 }
