@@ -159,6 +159,7 @@ class AdminConfigFactory
         $collection->addDefaults($global->getDefaults());
         $collection->addOptions($global->getOptions());
         $collection->addRequirements($global->getRequirements());
+        $collection->setHost($global->getHost());
 
         return $collection;
     }
