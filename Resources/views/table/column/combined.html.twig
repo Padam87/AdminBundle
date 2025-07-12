@@ -3,12 +3,30 @@
 
 {% set entity = column.value(entity) %}
 
-{% for part in column.parts %}
-<dl>
-    <dt>{{ part.title|trans }}</dt>
-    <dd>
-        {% set blockName = ('part_' ~ part.property)|replace({ '.': '_', '?': '' }) %}
-        {{ block(blockName, parentTemplate) ?? include(part.template, { column: part, entity, parentTemplate }, false) }}
-    </dd>
-</dl>
-{% endfor %}
+{% if column.asTable %}
+    <table class="table table-sm table-borderless">
+    {% for part in column.parts %}
+        <tr>
+            <th {% for name, value in part.headerAttributes %}{{ name }}="{{ value }}"{% endfor %}>
+                {{ part.title|trans }}
+            </th>
+            <td {% for name, value in part.cellAttributes(entity) %}{{ name }}="{{ value }}"{% endfor %}>
+                {% set blockName = ('part_' ~ part.property)|replace({ '.': '_', '?': '' }) %}
+                {{ block(blockName, parentTemplate) ?? include(part.template, { column: part, entity, parentTemplate }, false) }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <dl>
+        {% for part in column.parts %}
+            <dt {% for name, value in part.headerAttributes %}{{ name }}="{{ value }}"{% endfor %}>
+                {{ part.title|trans }}
+            </dt>
+            <dd {% for name, value in part.cellAttributes(entity) %}{{ name }}="{{ value }}"{% endfor %}>
+                {% set blockName = ('part_' ~ part.property)|replace({ '.': '_', '?': '' }) %}
+                {{ block(blockName, parentTemplate) ?? include(part.template, { column: part, entity, parentTemplate }, false) }}
+            </dd>
+        {% endfor %}
+    </dl>
+{% endif %}

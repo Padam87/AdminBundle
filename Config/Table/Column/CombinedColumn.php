@@ -7,6 +7,7 @@ use Twig\Template;
 class CombinedColumn extends Column
 {
     private array $parts = [];
+    private bool $asTable = true;
 
     public function __construct(string $property)
     {
@@ -50,5 +51,17 @@ class CombinedColumn extends Column
     public function isCombined(): bool
     {
         return true;
+    }
+
+    public function isAsTable(): bool
+    {
+        return $this->asTable;
+    }
+
+    public function setAsTable(bool $asTable): self
+    {
+        $this->asTable = $asTable;
+
+        return $this;
     }
 }
