@@ -26,6 +26,7 @@ services:
       $admins: !tagged padam87_admin.controller
       $factory: '@Symfony\Component\Form\FormFactoryInterface'
       $logger: '@Psr\Log\LoggerInterface'
+      $config: '%padam87_admin.config%'
     tags:
       - { name: translation.extractor, alias: admin }
 

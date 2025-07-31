@@ -34,14 +34,14 @@ class AdminConfigFactory
             ->setRoutes($this->getRoutes($controllerFqcn))
             ->addAction(
                 Action::create(Action::CREATE, Action::TYPE_GLOBAL)
-                    ->setTitle(new TranslatableMessage('admin.action.create', ['%entity%' => $this->translator->trans($config->getSingularName())]))
+                    ->setTitle(new TranslatableMessage('admin.action.create', ['%entity%' => $this->translator->trans($config->getSingularName())], $this->config['translations']['domains']['action']))
                     ->setRouteName($config->getRouteNameForAction(Action::CREATE))
                     ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::CREATE]['control']))
                     ->setIcon(HtmlElement::fromConfiguration($this->config['actions'][Action::CREATE]['icon']))
             )
             ->addAction(
                 Action::create(Action::EDIT, Action::TYPE_ENTITY)
-                    ->setTitle('admin.action.edit')
+                    ->setTitle(new TranslatableMessage('admin.action.edit', [], $this->config['translations']['domains']['action']))
                     ->setRouteName($config->getRouteNameForAction(Action::EDIT))
                     ->setRouteParameters(fn($entity): array => ['id' => $entity->getId()])
                     ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::EDIT]['control']))
@@ -49,7 +49,7 @@ class AdminConfigFactory
             )
             ->addAction(
                 SubmittedAction::create(Action::DELETE, Action::TYPE_ENTITY)
-                    ->setTitle('admin.action.delete')
+                    ->setTitle(new TranslatableMessage('admin.action.delete', [], $this->config['translations']['domains']['action']))
                     ->setMethod('DELETE')
                     ->setRouteName($config->getRouteNameForAction(Action::DELETE))
                     ->setRouteParameters(fn($entity): array => ['id' => $entity->getId()])
@@ -58,7 +58,7 @@ class AdminConfigFactory
             )
             ->addAction(
                 Action::create(Action::BATCH_DELETE, Action::TYPE_BATCH)
-                    ->setTitle('admin.action.batch_delete')
+                    ->setTitle(new TranslatableMessage('admin.action.batch_delete', [], $this->config['translations']['domains']['action']))
                     ->setRouteName($config->getRouteNameForAction(Action::BATCH_DELETE))
                     ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::BATCH_DELETE]['control']))
                     ->setIcon(HtmlElement::fromConfiguration($this->config['actions'][Action::BATCH_DELETE]['icon']))

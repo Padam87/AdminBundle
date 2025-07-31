@@ -18,12 +18,14 @@ class AdminExtractor implements ExtractorInterface
     private iterable $admins;
     private FormFactoryInterface $factory;
     private LoggerInterface $logger;
+    private array $config;
 
-    public function __construct(iterable $admins, FormFactoryInterface $factory, LoggerInterface $logger)
+    public function __construct(iterable $admins, FormFactoryInterface $factory, LoggerInterface $logger, array $config)
     {
         $this->admins = $admins;
         $this->factory = $factory;
         $this->logger = $logger;
+        $this->config = $config;
     }
 
     public function extract($resource, MessageCatalogue $catalogue): void
@@ -45,16 +47,16 @@ class AdminExtractor implements ExtractorInterface
         $this->prefix = $prefix;
     }
 
-    private function addMessage(TranslatableMessage|string|null $message, MessageCatalogue $catalogue): void
+    private function addMessage(MessageCatalogue $catalogue, TranslatableMessage|string|null $message, ?string $domain = null): void
     {
         if ($message === null) {
             return;
         }
 
         if ($message instanceof TranslatableMessage) {
-            $catalogue->set($message->getMessage(), '__' . $message->getMessage(), $message->getDomain() ?? 'messages');
+            $catalogue->set($message->getMessage(), '__' . $message->getMessage(), $message->getDomain() ?? $this->config['translations']['domains']['entity']);
         } else {
-            $catalogue->set($message, '__' . $message);
+            $catalogue->set($message, '__' . $message, $domain ?? $this->config['translations']['domains']['entity']);
         }
     }
 
@@ -63,11 +65,11 @@ class AdminExtractor implements ExtractorInterface
         $config = $controller->getConfig();
 
         foreach ([$config->getSingularName(), $config->getPluralName()] as $message) {
-            $this->addMessage($message, $catalogue);
+            $this->addMessage($catalogue, $message, $this->config['translations']['domains']['entity']);
         }
 
         foreach ($config->getActions() as $action) {
-            $this->addMessage($action->getTitle(), $catalogue);
+            $this->addMessage($catalogue, $action->getTitle(), $this->config['translations']['domains']['action']);
         }
     }
 
@@ -76,17 +78,17 @@ class AdminExtractor implements ExtractorInterface
         $table = $controller->createTable();
 
         foreach ($table->getColumns() as $column) {
-            $title = $column->getTitle();
-
-            $catalogue->set($title, '__' . $title);
+            $this->addMessage($catalogue, $column->getTitle(), $this->config['translations']['domains']['entity']);
         }
 
-        foreach ($table->getFilterSets() as $filterSet) {
-            if (null === $name = $filterSet->getName()) {
-                continue;
-            }
+        foreach ($table->getFilterSets() as $category => $sets) {
+            foreach ($sets as $filterSet) {
+                if (null === $name = $filterSet->getName()) {
+                    continue;
+                }
 
-            $catalogue->set($name, '__' . $name);
+                $this->addMessage($catalogue, $name, $this->config['translations']['domains']['action']);
+            }
         }
     }
 
@@ -119,7 +121,7 @@ class AdminExtractor implements ExtractorInterface
                 continue;
             }
 
-            $catalogue->add([$label['id'] => $label['translation']], $label['domain'] ?? 'messages');
+            $this->addMessage($catalogue, $label['id'], $label['domain'] ?? $this->config['translations']['domains']['entity']);
         }
     }
 
