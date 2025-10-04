@@ -220,7 +220,7 @@ abstract class AdminController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->save($entity);
+                $this->save($entity, $form);
 
                 return true;
             } else {
@@ -241,7 +241,7 @@ abstract class AdminController extends AbstractController
         return new $fqcn();
     }
 
-    protected function save($entity): void
+    protected function save(object $entity, FormInterface $form): void
     {
         $em = $this->container->get('doctrine')->getManager();
         $em->persist($entity);
