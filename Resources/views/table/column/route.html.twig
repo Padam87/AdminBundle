@@ -1,8 +1,9 @@
 {# @var column \Padam87\AdminBundle\Config\Table\Column\RouteColumn #}
 {# @var entity object #}
 
+{% set realEntity = entity['__entity__'] is defined ? entity['__entity__'] : entity %}
 {% set value = column.value(entity) %}
-{% set route = column.route(entity) %}
+{% set route = column.route(realEntity) %}
 {% if value -%}
     {% if route -%}
         <a href="{{ path(route.name, route.parameters, route.reference_type) }}" title="{{ value }}">{{ value }}</a>
