@@ -4,7 +4,7 @@ namespace Padam87\AdminBundle\Config;
 
 use Padam87\AdminBundle\Config\Action\Action;
 use Padam87\AdminBundle\Config\Action\SubmittedAction;
-use Symfony\Component\Routing\Annotation\Route as RouteAnnotation;
+use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
@@ -68,10 +68,10 @@ class AdminConfigFactory
         return $config;
     }
 
-    protected function getBaseRoute(string $controllerFqcn): RouteAnnotation
+    protected function getBaseRoute(string $controllerFqcn): RouteAttribute
     {
         $class = new \ReflectionClass($controllerFqcn);
-        $attribute = $class->getAttributes(RouteAnnotation::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+        $attribute = $class->getAttributes(RouteAttribute::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
         if ($attribute === null) {
             throw new \LogicException(

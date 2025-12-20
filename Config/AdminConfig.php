@@ -3,7 +3,7 @@
 namespace Padam87\AdminBundle\Config;
 
 use Padam87\AdminBundle\Config\Action\Action;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Translation\TranslatableMessage;
 
@@ -70,6 +70,13 @@ class AdminConfig
     public function removeAction(string $name): self
     {
         unset($this->actions[$name]);
+
+        /** @var Route $route */
+        foreach ($this->routes->all() as $routeName => $route) {
+            if ($route->getDefault('_action') === $name) {
+                $this->routes->remove($routeName);
+            }
+        }
 
         return $this;
     }

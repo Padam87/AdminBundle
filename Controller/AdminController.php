@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -34,7 +35,6 @@ abstract class AdminController extends AbstractController
                 'translator' => TranslatorInterface::class,
                 'event_dispatcher' => EventDispatcherInterface::class,
                 'doctrine' => ManagerRegistry::class,
-                AdminConfigFactory::class => AdminConfigFactory::class,
                 TableFactory::class => TableFactory::class,
                 Filters::class => Filters::class,
             ],
@@ -42,14 +42,10 @@ abstract class AdminController extends AbstractController
         );
     }
 
-    public function init(AdminConfigFactory $configFactory): void
+    protected function getEntityFqcn()
     {
-        $config = $configFactory->create(static::class, $this->getEntityFqcn());
-        $this->configure($config);
-        $this->config = $config;
+        return $this->config->getEntityFqcn();
     }
-
-    abstract protected function getEntityFqcn();
 
     public function getFormFqcn($entity): ?string
     {
@@ -63,6 +59,12 @@ abstract class AdminController extends AbstractController
     public function getConfig(): AdminConfig
     {
         return $this->config;
+    }
+
+    public function setConfig(AdminConfig $config): void
+    {
+        $this->configure($config);
+        $this->config = $config;
     }
 
     /*********************************/

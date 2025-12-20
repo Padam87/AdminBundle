@@ -2,12 +2,14 @@
 
 namespace Padam87\AdminBundle\DependencyInjection;
 
+use Padam87\AdminBundle\Attribute\Admin;
+use Padam87\AdminBundle\Config\AdminConfig;
+use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Padam87\AdminBundle\Config\AdminConfigFactory;
-use Padam87\AdminBundle\Controller\AdminController;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
@@ -28,15 +30,31 @@ class Padam87AdminExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
 
-        $container->registerForAutoconfiguration(AdminController::class)
-            ->addTag('padam87_admin.controller')
-            ->addMethodCall(
-                'init',
-                [
-                    $container->getDefinition(AdminConfigFactory::class),
-                ]
-            )
-        ;
+        $container->registerAttributeForAutoconfiguration(
+            Admin::class,
+            static function (ChildDefinition $definition, Admin $attribute, \ReflectionClass $reflector) use ($container): void {
+                $refl = new \ReflectionClass($attribute->entityFqcn);
+                $adminConfig = $container->setDefinition(
+                    'padam87_admin.admin_config.' . $refl->getShortName(),
+                    new Definition(AdminConfig::class)
+                        ->setFactory([$container->getDefinition(AdminConfigFactory::class), 'create'])
+                        ->setArguments([
+                            $reflector->getName(),
+                            $attribute->entityFqcn,
+                        ])
+                );
+                $adminConfig->addTag('padam87_admin.admin_config');
+
+                $definition
+                    ->addTag('padam87_admin.controller')
+                    ->addMethodCall(
+                        'setConfig',
+                        [
+                            $adminConfig,
+                        ]
+                    );
+            }
+        );
 
         $container->setParameter('padam87_admin.config', $config);
     }
