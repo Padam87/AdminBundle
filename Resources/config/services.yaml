@@ -5,10 +5,7 @@ services:
       $nameConverter: '@serializer.name_converter.camel_case_to_snake_case'
       $translator: '@translator'
 
-  Padam87\AdminBundle\Config\Table\TableFactory:
-    arguments:
-      $config: '%padam87_admin.config%'
-      $formFactory: '@Symfony\Component\Form\FormFactoryInterface'
+  Padam87\AdminBundle\Config\Table\TableFactory: ~
 
   Padam87\AdminBundle\Routing\AdminLoader:
     arguments:

@@ -9,17 +9,16 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Padam87\AdminBundle\Config\Action\Action;
 use Padam87\AdminBundle\Config\AdminConfig;
-use Padam87\AdminBundle\Config\AdminConfigFactory;
 use Padam87\AdminBundle\Config\Table\Table;
 use Padam87\AdminBundle\Config\Table\TableFactory;
 use Padam87\FormFilterBundle\Service\Filters;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -47,9 +46,31 @@ abstract class AdminController extends AbstractController
         return $this->config->getEntityFqcn();
     }
 
-    public function getFormFqcn($entity): ?string
+    public function getDataFormFqcn($entity): ?string
     {
         return null;
+    }
+
+    public function getDataFormOptions($entity): array
+    {
+        return [
+            'data_class' => $this->getEntityFqcn(),
+        ];
+    }
+
+    public function getFilterFormFqcn(): ?string
+    {
+        return FormType::class;
+    }
+
+    public function getFilterFormOptions(): array
+    {
+        return [
+            'method' => 'GET',
+            'required' => false,
+            'csrf_protection' => false,
+            'allow_extra_fields' => true,
+        ];
     }
 
     protected function configure(AdminConfig $config): void
@@ -95,6 +116,13 @@ abstract class AdminController extends AbstractController
         $tableFactory = $this->container->get(TableFactory::class);
 
         $table = $tableFactory->create($this->config);
+        $table->setFilters($this->container->get('form.factory')->createNamedBuilder(
+            false,
+            $this->getFilterFormFqcn(),
+            null,
+            $this->getFilterFormOptions()
+        ));
+
         $this->table($table);
 
         return $table;
@@ -257,18 +285,11 @@ abstract class AdminController extends AbstractController
 
     protected function createDataForm($entity): FormInterface
     {
-        if ($this->getFormFqcn($entity) === null) {
+        if ($this->getDataFormFqcn($entity) === null) {
             throw new \LogicException('No data form specified');
         }
 
-        return $this->createForm($this->getFormFqcn($entity), $entity, $this->getFormOptions($entity));
-    }
-
-    public function getFormOptions($entity): array
-    {
-        return [
-            'data_class' => $this->getEntityFqcn(),
-        ];
+        return $this->createForm($this->getDataFormFqcn($entity), $entity, $this->getDataFormOptions($entity));
     }
 
     /*********************************/
