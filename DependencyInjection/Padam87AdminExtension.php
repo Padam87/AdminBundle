@@ -40,7 +40,6 @@ class Padam87AdminExtension extends Extension
                         ->setFactory([$container->getDefinition(AdminConfigFactory::class), 'create'])
                         ->setArguments([
                             $reflector->getName(),
-                            $attribute->entityFqcn,
                         ])
                 );
                 $adminConfig->addTag('padam87_admin.admin_config');

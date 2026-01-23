@@ -2,6 +2,7 @@
 
 namespace Padam87\AdminBundle\Config;
 
+use Padam87\AdminBundle\Attribute\Admin;
 use Padam87\AdminBundle\Config\Action\Action;
 use Padam87\AdminBundle\Config\Action\SubmittedAction;
 use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
@@ -20,12 +21,22 @@ class AdminConfigFactory
     ) {
     }
 
-    public function create(string $controllerFqcn, string $entityFqcn): AdminConfig
+    public function create(string $controllerFqcn): AdminConfig
     {
-        $refl = new \ReflectionClass($entityFqcn);
+        $controllerRefl = new \ReflectionClass($controllerFqcn);
+        $attribute = $controllerRefl->getAttributes(Admin::class)[0]->newInstance();
+
+        $refl = new \ReflectionClass($attribute->entityFqcn);
         $name = $this->nameConverter->normalize($refl->getShortName());
 
-        $config = new AdminConfig($entityFqcn);
+        $config = new AdminConfig(
+            entityFqcn: $attribute->entityFqcn,
+            dataFormFqcn: $attribute->dataFormFqcn,
+            dataFormOptions: $attribute->dataFormOptions,
+            filterFormFqcn: $attribute->filterFormFqcn,
+            filterFormOptions: $attribute->filterFormOptions,
+        );
+
         $config
             ->setSingularName(sprintf('%s.singular', $name))
             ->setPluralName(sprintf('%s.plural', $name))
