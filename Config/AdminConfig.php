@@ -3,6 +3,7 @@
 namespace Padam87\AdminBundle\Config;
 
 use Padam87\AdminBundle\Config\Action\Action;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Translation\TranslatableMessage;
@@ -25,13 +26,77 @@ class AdminConfig
 
     private string|TranslatableMessage $pluralName;
 
-    public function __construct(private string $entityFqcn)
-    {
+    public function __construct(
+        private string $entityFqcn,
+        private ?string $dataFormFqcn = null,
+        private array $dataFormOptions = [],
+        private ?string $filterFormFqcn = null,
+        private array $filterFormOptions = [],
+    ) {
+        $this->dataFormOptions ??= [
+            'data_class' => $this->getEntityFqcn(),
+        ];
+
+        $this->filterFormFqcn ??= FormType::class;
+        $this->filterFormOptions ??= [
+            'method' => 'GET',
+            'required' => false,
+            'csrf_protection' => false,
+            'allow_extra_fields' => true,
+        ];
     }
 
     public function getEntityFqcn(): string
     {
         return $this->entityFqcn;
+    }
+
+    public function getDataFormFqcn(): ?string
+    {
+        return $this->dataFormFqcn;
+    }
+
+    public function setDataFormFqcn(?string $dataFormFqcn): self
+    {
+        $this->dataFormFqcn = $dataFormFqcn;
+
+        return $this;
+    }
+
+    public function getDataFormOptions(): array
+    {
+        return $this->dataFormOptions;
+    }
+
+    public function setDataFormOptions(array $dataFormOptions): self
+    {
+        $this->dataFormOptions = $dataFormOptions;
+
+        return $this;
+    }
+
+    public function getFilterFormFqcn(): ?string
+    {
+        return $this->filterFormFqcn;
+    }
+
+    public function setFilterFormFqcn(?string $filterFormFqcn): self
+    {
+        $this->filterFormFqcn = $filterFormFqcn;
+
+        return $this;
+    }
+
+    public function getFilterFormOptions(): array
+    {
+        return $this->filterFormOptions;
+    }
+
+    public function setFilterFormOptions(array $filterFormOptions): self
+    {
+        $this->filterFormOptions = $filterFormOptions;
+
+        return $this;
     }
 
     public function getAction(string $name): ?Action

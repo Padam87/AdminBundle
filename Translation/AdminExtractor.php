@@ -98,13 +98,13 @@ class AdminExtractor implements ExtractorInterface
 
         $entity = new $fqcn();
 
-        if ($controller->getDataFormFqcn($entity) === null) {
+        if ($controller->getConfig()->getDataFormFqcn() === null) {
             return;
         }
 
         try {
-            $type = $controller->getDataFormFqcn($entity);
-            $options = $controller->getDataFormOptions($entity);
+            $type = $controller->getConfig()->getDataFormFqcn();
+            $options = $controller->getConfig()->getDataFormOptions();
             $options['csrf_protection'] = false;
 
             $form = $this->factory->create($type, $entity, $options);

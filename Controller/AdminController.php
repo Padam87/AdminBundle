@@ -13,7 +13,6 @@ use Padam87\AdminBundle\Config\Table\Table;
 use Padam87\AdminBundle\Config\Table\TableFactory;
 use Padam87\FormFilterBundle\Service\Filters;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,33 +43,6 @@ abstract class AdminController extends AbstractController
     protected function getEntityFqcn()
     {
         return $this->config->getEntityFqcn();
-    }
-
-    public function getDataFormFqcn($entity): ?string
-    {
-        return null;
-    }
-
-    public function getDataFormOptions($entity): array
-    {
-        return [
-            'data_class' => $this->getEntityFqcn(),
-        ];
-    }
-
-    public function getFilterFormFqcn(): ?string
-    {
-        return FormType::class;
-    }
-
-    public function getFilterFormOptions(): array
-    {
-        return [
-            'method' => 'GET',
-            'required' => false,
-            'csrf_protection' => false,
-            'allow_extra_fields' => true,
-        ];
     }
 
     protected function configure(AdminConfig $config): void
@@ -118,9 +90,9 @@ abstract class AdminController extends AbstractController
         $table = $tableFactory->create($this->config);
         $table->setFilters($this->container->get('form.factory')->createNamedBuilder(
             false,
-            $this->getFilterFormFqcn(),
+            $this->getConfig()->getFilterFormFqcn(),
             null,
-            $this->getFilterFormOptions()
+            $this->getConfig()->getFilterFormOptions()
         ));
 
         $this->table($table);
@@ -285,11 +257,11 @@ abstract class AdminController extends AbstractController
 
     protected function createDataForm($entity): FormInterface
     {
-        if ($this->getDataFormFqcn($entity) === null) {
+        if ($this->getConfig()->getDataFormFqcn() === null) {
             throw new \LogicException('No data form specified');
         }
 
-        return $this->createForm($this->getDataFormFqcn($entity), $entity, $this->getDataFormOptions($entity));
+        return $this->createForm($this->getConfig()->getDataFormFqcn(), $entity, $this->getConfig()->getDataFormOptions($entity));
     }
 
     /*********************************/
