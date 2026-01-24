@@ -29,9 +29,9 @@ class AdminConfig
     public function __construct(
         private string $entityFqcn,
         private ?string $dataFormFqcn = null,
-        private array $dataFormOptions = [],
+        private ?array $dataFormOptions = null,
         private ?string $filterFormFqcn = null,
-        private array $filterFormOptions = [],
+        private ?array $filterFormOptions = null,
     ) {
         $this->dataFormOptions ??= [
             'data_class' => $this->getEntityFqcn(),

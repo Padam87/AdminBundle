@@ -8,9 +8,9 @@ class Admin
     public function __construct(
         public string $entityFqcn,
         public ?string $dataFormFqcn = null,
-        public array $dataFormOptions = [],
+        public ?array $dataFormOptions = null,
         public ?string $filterFormFqcn = null,
-        public array $filterFormOptions = [],
+        public ?array $filterFormOptions = null,
     ) {
     }
 }
