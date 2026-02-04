@@ -12,20 +12,10 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 class AdminExtractor implements ExtractorInterface
 {
-    private string $prefix;
     private bool $ran = false;
 
-    private iterable $admins;
-    private FormFactoryInterface $factory;
-    private LoggerInterface $logger;
-    private array $config;
-
-    public function __construct(iterable $admins, FormFactoryInterface $factory, LoggerInterface $logger, array $config)
+    public function __construct(private iterable $admins, private FormFactoryInterface $factory, private LoggerInterface $logger, private array $config)
     {
-        $this->admins = $admins;
-        $this->factory = $factory;
-        $this->logger = $logger;
-        $this->config = $config;
     }
 
     public function extract($resource, MessageCatalogue $catalogue): void
@@ -44,7 +34,6 @@ class AdminExtractor implements ExtractorInterface
 
     public function setPrefix($prefix): void
     {
-        $this->prefix = $prefix;
     }
 
     private function addMessage(MessageCatalogue $catalogue, TranslatableMessage|string|null $message, ?string $domain = null): void
@@ -81,7 +70,7 @@ class AdminExtractor implements ExtractorInterface
             $this->addMessage($catalogue, $column->getTitle(), $this->config['translations']['domains']['entity']);
         }
 
-        foreach ($table->getFilterSets() as $category => $sets) {
+        foreach ($table->getFilterSets() as $sets) {
             foreach ($sets as $filterSet) {
                 if (null === $name = $filterSet->getName()) {
                     continue;

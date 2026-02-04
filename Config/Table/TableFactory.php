@@ -13,7 +13,7 @@ class TableFactory
 
         $table = new Table();
 
-        $table->setLabelFormat((new CamelCaseToSnakeCaseNameConverter())->normalize($refl->getShortName()) . '.%name%');
+        $table->setLabelFormat(new CamelCaseToSnakeCaseNameConverter()->normalize($refl->getShortName()) . '.%name%');
         $table->setQueryAlias(strtolower((string) preg_replace('/[a-z]/', '', $refl->getShortName())));
 
         return $table;

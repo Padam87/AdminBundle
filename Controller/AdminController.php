@@ -151,7 +151,7 @@ abstract class AdminController extends AbstractController
 
         return $this->container->get('knp_paginator')->paginate(
             $qb,
-            $request->get('page', 1),
+            $request->query->get('page', 1),
             $request->query->get('items', $table->getItemsPerPage()),
             array_merge($options, $table->getPaginatorOptions())
         );
@@ -187,7 +187,7 @@ abstract class AdminController extends AbstractController
 
     public function __edit(Request $request): Response
     {
-        $id = $request->get('id');
+        $id = $request->attributes->get('id');
         $em = $this->container->get('doctrine')->getManager();
 
         if (null === $entity = $em->find($this->getEntityFqcn(), $id)) {
@@ -261,7 +261,7 @@ abstract class AdminController extends AbstractController
             throw new \LogicException('No data form specified');
         }
 
-        return $this->createForm($this->getConfig()->getDataFormFqcn(), $entity, $this->getConfig()->getDataFormOptions($entity));
+        return $this->createForm($this->getConfig()->getDataFormFqcn(), $entity, $this->getConfig()->getDataFormOptions());
     }
 
     /*********************************/
@@ -270,7 +270,7 @@ abstract class AdminController extends AbstractController
 
     public function __delete(Request $request): Response
     {
-        $this->deleteEntity($request->get('id'));
+        $this->deleteEntity($request->attributes->get('id'));
 
         return $this->after(Action::DELETE);
     }

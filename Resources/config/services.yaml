@@ -20,7 +20,7 @@ services:
 
   Padam87\AdminBundle\Translation\AdminExtractor:
     arguments:
-      $admins: !tagged padam87_admin.controller
+      $admins: !tagged_iterator padam87_admin.controller
       $factory: '@Symfony\Component\Form\FormFactoryInterface'
       $logger: '@Psr\Log\LoggerInterface'
       $config: '%padam87_admin.config%'

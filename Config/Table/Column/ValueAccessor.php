@@ -13,10 +13,10 @@ class ValueAccessor
 
     public function __construct(private string $property)
     {
-        $this->accessor = (new PropertyAccessorBuilder())->getPropertyAccessor();
+        $this->accessor = new PropertyAccessorBuilder()->getPropertyAccessor();
     }
 
-    public function __invoke(object|array $entity)
+    public function __invoke(object|array $entity): mixed
     {
         if (is_array($entity)
             && array_key_exists(self::ENTITY_IN_ARRAY_MAGIC_KEY, $entity)

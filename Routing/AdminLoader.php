@@ -8,12 +8,12 @@ use Symfony\Component\Routing\RouteCollection;
 
 class AdminLoader extends Loader
 {
-    public function __construct(string $env = null, private iterable $controllers)
+    public function __construct(?string $env = null, private ?iterable $controllers = null)
     {
         parent::__construct($env);
     }
 
-    public function load(mixed $resource, string $type = null): mixed
+    public function load(mixed $resource, ?string $type = null): mixed
     {
         $routes = new RouteCollection();
 
@@ -25,7 +25,7 @@ class AdminLoader extends Loader
         return $routes;
     }
 
-    public function supports(mixed $resource, string $type = null): bool
+    public function supports(mixed $resource, ?string $type = null): bool
     {
         return 'padam87_admin' === $type;
     }

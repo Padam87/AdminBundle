@@ -73,7 +73,7 @@ class Table
     public function prepareColumn(Column $column): Column
     {
         if ($column->getTitle() === null) {
-            $column->setTitle(str_replace('%name%', (new CamelCaseToSnakeCaseNameConverter())->normalize($column->getProperty()), (string) $this->labelFormat));
+            $column->setTitle(str_replace('%name%', new CamelCaseToSnakeCaseNameConverter()->normalize($column->getProperty()), (string) $this->labelFormat));
         }
 
         if ($column->getSortable() === true) {

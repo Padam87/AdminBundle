@@ -3,7 +3,6 @@
 namespace Padam87\AdminBundle\DependencyInjection;
 
 use Padam87\AdminBundle\Config\Action\Action;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
