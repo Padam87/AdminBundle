@@ -165,12 +165,12 @@ class AdminConfigFactory
             )
         );
 
-        $collection->addPrefix($global->getPath());
-        $collection->addNamePrefix($global->getName());
-        $collection->addDefaults($global->getDefaults());
-        $collection->addOptions($global->getOptions());
-        $collection->addRequirements($global->getRequirements());
-        $collection->setHost($global->getHost());
+        $collection->addPrefix($global->path);
+        $collection->addNamePrefix($global->name);
+        $collection->addDefaults($global->defaults);
+        $collection->addOptions($global->options);
+        $collection->addRequirements($global->requirements);
+        $collection->setHost($global->host);
 
         return $collection;
     }

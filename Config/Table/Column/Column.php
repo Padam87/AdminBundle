@@ -2,13 +2,10 @@
 
 namespace Padam87\AdminBundle\Config\Table\Column;
 
-use Symfony\Component\PropertyAccess\PropertyAccessorBuilder;
 use Twig\Template;
 
 class Column
 {
-    protected string $property;
-
     protected ?string $title = null;
 
     protected array $headerAttributes = [];
@@ -26,10 +23,9 @@ class Column
         return new static($property);
     }
 
-    public function __construct(string $property)
+    public function __construct(protected string $property)
     {
-        $this->property = $property;
-        $this->getter = (new ValueAccessor($property))(...);
+        $this->getter = (new ValueAccessor($this->property))(...);
     }
 
     public function getTemplate(string $format = 'html'): Template|string

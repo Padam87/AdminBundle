@@ -10,11 +10,8 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 
 class LabelExtension extends AbstractTypeExtension
 {
-    private CamelCaseToSnakeCaseNameConverter $converter;
-
-    public function __construct(CamelCaseToSnakeCaseNameConverter $converter)
+    public function __construct(private CamelCaseToSnakeCaseNameConverter $converter)
     {
-        $this->converter = $converter;
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void

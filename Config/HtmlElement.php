@@ -17,7 +17,7 @@ class HtmlElement
         }
     }
 
-    function normalizeAttribute($array, string $prefix = ''): array {
+    public function normalizeAttribute($array, string $prefix = ''): array {
         $result = [];
 
         foreach($array as $key=>$value) {
@@ -27,6 +27,7 @@ class HtmlElement
                 $result[$prefix . '-'. $key ] = $value;
             }
         }
+
         return $result;
     }
 
