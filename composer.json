@@ -24,6 +24,6 @@
     "symfony/framework-bundle": "^7.0 || ^8.0",
     "doctrine/orm": "^2.3 || ^3.0",
     "knplabs/knp-paginator-bundle": "^6.0",
-    "padam87/form-filter-bundle": "^0.9"
+    "padam87/form-filter-bundle": "^0.10"
   }
 }
