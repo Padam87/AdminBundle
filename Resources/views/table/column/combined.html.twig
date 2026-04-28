@@ -7,9 +7,11 @@
     <table class="table table-sm table-borderless">
     {% for part in column.parts %}
         <tr>
-            <th {% for name, value in part.headerAttributes %}{{ name }}="{{ value }}"{% endfor %}>
-                {{ part.title|trans }}
-            </th>
+            {% if part.title != false %}
+                <th {% for name, value in part.headerAttributes %}{{ name }}="{{ value }}"{% endfor %}>
+                    {{ part.title|trans }}
+                </th>
+            {% endif %}
             <td {% for name, value in part.cellAttributes(entity) %}{{ name }}="{{ value }}"{% endfor %}>
                 {% set blockName = ('part_' ~ part.property)|replace({ '.': '_', '?': '' }) %}
                 {{ block(blockName, parentTemplate) ?? include(part.template, { column: part, entity, parentTemplate }, false) }}
@@ -20,9 +22,11 @@
 {% else %}
     <dl>
         {% for part in column.parts %}
-            <dt {% for name, value in part.headerAttributes %}{{ name }}="{{ value }}"{% endfor %}>
-                {{ part.title|trans }}
-            </dt>
+            {% if part.title != false %}
+                <dt {% for name, value in part.headerAttributes %}{{ name }}="{{ value }}"{% endfor %}>
+                    {{ part.title|trans }}
+                </dt>
+            {% endif %}
             <dd {% for name, value in part.cellAttributes(entity) %}{{ name }}="{{ value }}"{% endfor %}>
                 {% set blockName = ('part_' ~ part.property)|replace({ '.': '_', '?': '' }) %}
                 {{ block(blockName, parentTemplate) ?? include(part.template, { column: part, entity, parentTemplate }, false) }}
