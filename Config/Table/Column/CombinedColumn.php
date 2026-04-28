@@ -39,10 +39,6 @@ class CombinedColumn extends Column
 
     public function addPart(Column $part): self
     {
-        if ($part instanceof CombinedColumn) {
-            throw new \LogicException('Multi level nesting of columns is not allowed.');
-        }
-
         $this->parts[$part->getProperty()] = $part;
 
         return $this;
