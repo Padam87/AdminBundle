@@ -302,6 +302,10 @@ abstract class AdminController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        if (!$this->before(Action::DELETE, $entity)) {
+            return;
+        }
+
         try {
             $em->remove($entity);
             $em->flush();
@@ -325,6 +329,11 @@ abstract class AdminController extends AbstractController
         $request = $this->container->get('request_stack')->getCurrentRequest();
 
         return $this->redirect($request->headers->get('referer'));
+    }
+
+    protected function before(string $action, $entity = null): bool
+    {
+        return true;
     }
 
     protected function after(string $action, $entity = null): Response
