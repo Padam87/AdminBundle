@@ -116,9 +116,9 @@ class AdminConfig
         $actions = [];
 
         /** @var Action $action */
-        foreach ($this->actions as $action) {
+        foreach ($this->actions as $name => $action) {
             if ($action->getType() === $type) {
-                $actions[] = $action;
+                $actions[$name] = $action;
             }
         }
 
