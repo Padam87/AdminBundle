@@ -270,9 +270,16 @@ abstract class AdminController extends AbstractController
 
     public function __delete(Request $request): Response
     {
-        $this->deleteEntity($request->attributes->get('id'));
+        $id = $request->attributes->get('id');
+        $em = $this->container->get('doctrine')->getManager();
 
-        return $this->after(Action::DELETE);
+        if (null === $entity = $em->find($this->getEntityFqcn(), $id)) {
+            throw $this->createNotFoundException();
+        }
+
+        $success = $this->deleteEntity($id);
+
+        return $this->after(Action::DELETE, $success ? null : $entity);
     }
 
     public function __batchDelete(Request $request): Response
@@ -290,7 +297,7 @@ abstract class AdminController extends AbstractController
         return $this->after(Action::BATCH_DELETE);
     }
 
-    protected function deleteEntity($id)
+    protected function deleteEntity($id): bool
     {
         $em = $this->container->get('doctrine')->getManager();
 
@@ -303,7 +310,7 @@ abstract class AdminController extends AbstractController
         }
 
         if (!$this->before(Action::DELETE, $entity)) {
-            return;
+            return false;
         }
 
         try {
@@ -321,7 +328,11 @@ abstract class AdminController extends AbstractController
                     'padam87_admin'
                 )
             );
+
+            return false;
         }
+
+        return true;
     }
 
     protected function redirectToReferer(): RedirectResponse
