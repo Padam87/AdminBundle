@@ -30,6 +30,10 @@ class Padam87AdminExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
 
+        if (interface_exists(\JMS\Serializer\SerializerInterface::class)) {
+            $loader->load('listing.yaml');
+        }
+
         $container->registerAttributeForAutoconfiguration(
             Admin::class,
             static function (ChildDefinition $definition, Admin $attribute, \ReflectionClass $reflector) use ($container): void {

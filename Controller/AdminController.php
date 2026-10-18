@@ -5,15 +5,18 @@ namespace Padam87\AdminBundle\Controller;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Bundle\PaginatorBundle\Pagination\SlidingPaginationInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Padam87\AdminBundle\Config\Action\Action;
 use Padam87\AdminBundle\Config\AdminConfig;
 use Padam87\AdminBundle\Config\Table\Table;
 use Padam87\AdminBundle\Config\Table\TableFactory;
+use Padam87\AdminBundle\Listing\ListBuilder;
 use Padam87\FormFilterBundle\Service\Filters;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +38,7 @@ abstract class AdminController extends AbstractController
                 'doctrine' => ManagerRegistry::class,
                 TableFactory::class => TableFactory::class,
                 Filters::class => Filters::class,
+                ListBuilder::class => '?' . ListBuilder::class,
             ],
             parent::getSubscribedServices()
         );
@@ -70,6 +74,10 @@ abstract class AdminController extends AbstractController
         $request = $this->container->get('request_stack')->getCurrentRequest();
         $filters = $this->createFilterForm($table);
 
+        if ($this->isListDataRequest($request)) {
+            return $this->listData($table, $filters);
+        }
+
         return $this->render(
             $this->config->getTemplates()[Action::INDEX],
             [
@@ -81,6 +89,38 @@ abstract class AdminController extends AbstractController
                 ...$this->config->getViewVariablesForAction(Action::INDEX),
             ]
         );
+    }
+
+    /**
+     * JS rendered lists load their data (sorting, filtering, paging) from the index url, see ListBuilder.
+     */
+    protected function isListDataRequest(Request $request): bool
+    {
+        return $request->isXmlHttpRequest()
+            && in_array('application/json', $request->getAcceptableContentTypes(), true)
+            && $this->container->has(ListBuilder::class)
+            && $this->container->get(ListBuilder::class)->supports($this->config);
+    }
+
+    protected function listData(Table $table, ?FormInterface $filters): JsonResponse
+    {
+        $pagination = $this->paginate($table, $filters);
+
+        if (!$pagination instanceof SlidingPaginationInterface) {
+            throw new \LogicException('Serialized lists need the sliding pagination of KnpPaginatorBundle.');
+        }
+
+        $response = new JsonResponse($this->container->get(ListBuilder::class)->build(
+            $this->config,
+            $table,
+            $pagination,
+            $filters?->createView(),
+        ));
+
+        // the same url serves the html page, the browser must not reuse one for the other
+        $response->setVary('X-Requested-With', false);
+
+        return $response;
     }
 
     public function createTable(): Table

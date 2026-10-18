@@ -2,6 +2,9 @@
 
 namespace Padam87\AdminBundle\Config;
 
+use JMS\Serializer\Annotation as Serializer;
+
+#[Serializer\ExclusionPolicy('all')]
 class HtmlElement
 {
     private array $attributes = [];
@@ -36,6 +39,8 @@ class HtmlElement
         return new static($config['element'], $config['attributes']);
     }
 
+    #[Serializer\VirtualProperty]
+    #[Serializer\SerializedName('tag')]
     public function getTagName(): string
     {
         return $this->tagName;
@@ -48,6 +53,8 @@ class HtmlElement
         return $this;
     }
 
+    #[Serializer\VirtualProperty]
+    #[Serializer\SerializedName('attrs')]
     public function getAttributes(): array
     {
         return $this->attributes;

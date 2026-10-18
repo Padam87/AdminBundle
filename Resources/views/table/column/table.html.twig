@@ -1,0 +1,30 @@
+{# @var column \Padam87\AdminBundle\Config\Table\Column\TableColumn #}
+{# @var entity object #}
+
+{% set value = column.value(entity) %}
+
+{% if value %}
+    <table class="table table-borderless table-sm">
+        <thead>
+        <tr>
+            {% for part in column.parts %}
+                <th>{{ part.title|trans }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in value %}
+            <tr>
+                {% for part in column.parts %}
+                    <td {% for name, value in part.cellAttributes(row) %}{{ name }}="{{ value }}"{% endfor %}>
+                        {% set blockName = ('part_' ~ part.property)|replace({ '.': '_', '?': '' }) %}
+                        {% set entity = row %}
+
+                        {{ block(blockName, parentTemplate) ?? include(part.template, { column: part, entity: row, parentTemplate }, false) }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

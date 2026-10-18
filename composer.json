@@ -25,5 +25,8 @@
     "doctrine/orm": "^2.3 || ^3.0",
     "knplabs/knp-paginator-bundle": "^6.0",
     "padam87/form-filter-bundle": "^0.10"
+  },
+  "suggest": {
+    "jms/serializer": "Serializes table columns and actions (eg. for a JS rendered list)"
   }
 }

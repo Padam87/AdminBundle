@@ -2,11 +2,15 @@
 
 namespace Padam87\AdminBundle\Config\Table\Column;
 
+use JMS\Serializer\Annotation as Serializer;
 use Twig\Template;
 
+#[Serializer\ExclusionPolicy('all')]
 class CombinedColumn extends Column
 {
     private array $parts = [];
+    #[Serializer\Expose]
+    #[Serializer\SerializedName('asTable')]
     private bool $asTable = true;
 
     public function __construct(string $property)
@@ -37,6 +41,16 @@ class CombinedColumn extends Column
         return $this;
     }
 
+    /**
+     * @return Column[]
+     */
+    #[Serializer\VirtualProperty]
+    #[Serializer\SerializedName('parts')]
+    public function getPartList(): array
+    {
+        return array_values($this->parts);
+    }
+
     public function addPart(Column $part): self
     {
         $this->parts[$part->getProperty()] = $part;
@@ -47,6 +61,16 @@ class CombinedColumn extends Column
     public function isCombined(): bool
     {
         return true;
+    }
+
+    /**
+     * Renderer of the column in admin lists (eg. the admin-list Vue component of the application).
+     */
+    #[Serializer\VirtualProperty]
+    #[Serializer\SerializedName('type')]
+    public function getListType(): string
+    {
+        return 'combined';
     }
 
     public function isAsTable(): bool

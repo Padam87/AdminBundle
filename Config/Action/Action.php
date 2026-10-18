@@ -2,10 +2,12 @@
 
 namespace Padam87\AdminBundle\Config\Action;
 
+use JMS\Serializer\Annotation as Serializer;
 use Padam87\AdminBundle\Config\HtmlElement;
 use Symfony\Component\Translation\TranslatableMessage;
 use Twig\Template;
 
+#[Serializer\ExclusionPolicy('all')]
 class Action
 {
     public const INDEX = 'index';
@@ -29,6 +31,8 @@ class Action
 
     private HtmlElement $control;
 
+    #[Serializer\Expose]
+    #[Serializer\SerializedName('icon')]
     private ?HtmlElement $icon = null;
 
     public function __construct(private string $name,  private string $type)
@@ -46,6 +50,8 @@ class Action
         return '@Padam87Admin/action/action.html.twig';
     }
 
+    #[Serializer\VirtualProperty]
+    #[Serializer\SerializedName('name')]
     public function getName(): string
     {
         return $this->name;

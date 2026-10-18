@@ -7,3 +7,11 @@ flash:
 boolean:
   'true': Igen
   'false': Nem
+
+list:
+  title: '%entity% listája'
+  info: 'Aktuális oldal: %currentPage%, Oldalak száma: %pageCount%, Elemek száma: %itemCount%'
+  customize:
+    info: '%selected% / %total% oszlop kiválasztva, %itemsPerPage% sor oldalanként'
+  view:
+    custom: Egyedi

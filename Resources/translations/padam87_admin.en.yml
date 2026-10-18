@@ -1,0 +1,17 @@
+flash:
+  save:
+    failure: 'Saving failed.'
+  delete:
+    failure: 'Deleting failed - the entity is probably in use: #%id% - %entity%'
+
+boolean:
+  'true': 'Yes'
+  'false': 'No'
+
+list:
+  title: 'List of %entity%'
+  info: 'Page: %currentPage%, Pages: %pageCount%, Items: %itemCount%'
+  customize:
+    info: '%selected% / %total% columns selected, %itemsPerPage% rows per page'
+  view:
+    custom: Custom
