@@ -2,7 +2,6 @@
 
 namespace Padam87\AdminBundle\Config\Table;
 
-use Padam87\AdminBundle\Config\HtmlElement;
 use Symfony\Component\Translation\TranslatableMessage;
 
 class FilterSet
@@ -11,7 +10,8 @@ class FilterSet
 
     private TranslatableMessage|string|null $name = null;
 
-    private ?HtmlElement $icon = null;
+    // the name of the icon (see IconClass)
+    private ?string $icon = null;
 
     private array $data = [];
 
@@ -50,12 +50,15 @@ class FilterSet
         return $this;
     }
 
-    public function getIcon(): ?HtmlElement
+    public function getIcon(): ?string
     {
         return $this->icon;
     }
 
-    public function setIcon(?HtmlElement $icon): self
+    /**
+     * @param string|null $icon the name of the icon (see IconClass)
+     */
+    public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
 

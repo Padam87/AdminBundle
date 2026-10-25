@@ -3,73 +3,22 @@
 namespace Padam87\AdminBundle\DependencyInjection;
 
 use Padam87\AdminBundle\Config\Action\Action;
-use Symfony\Component\Config\Definition\Builder\NodeBuilder;
+use Padam87\AdminBundle\Config\Action\ActionBehavior;
+use Padam87\AdminBundle\Config\Action\ActionVariant;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
+    /**
+     * The default actions: behavior, variant, icon (a name, see icon_class), the method of a submitted action, the confirmation.
+     */
     private static array $actionConfig = [
-        Action::CREATE => [
-            'control' => [
-                'element' => 'a',
-                'attributes' => [
-                    'class' => 'btn btn-success',
-                ],
-            ],
-            'icon' => [
-                'element' => 'i',
-                'attributes' => [
-                    'class' => 'bi bi-plus',
-                ],
-            ],
-        ],
-        Action::EDIT => [
-            'control' => [
-                'element' => 'a',
-                'attributes' => [
-                    'class' => 'btn btn-secondary',
-                ],
-            ],
-            'icon' => [
-                'element' => 'i',
-                'attributes' => [
-                    'class' => 'bi bi-pen',
-                ],
-            ],
-        ],
-        Action::DELETE => [
-            'control' => [
-                'element' => 'button',
-                'attributes' => [
-                    'class' => 'btn btn-danger',
-                    'type' => 'submit',
-                ],
-            ],
-            'icon' => [
-                'element' => 'i',
-                'attributes' => [
-                    'class' => 'bi bi-trash',
-                ],
-            ],
-        ],
-        Action::BATCH_DELETE => [
-            'control' => [
-                'element' => 'button',
-                'attributes' => [
-                    'class' => 'btn btn-danger',
-                    'type' => 'submit',
-                    'form' => 'batch',
-                ],
-            ],
-            'icon' => [
-                'element' => 'i',
-                'attributes' => [
-                    'class' => 'bi bi-trash',
-                ],
-            ],
-        ],
+        Action::CREATE => ['behavior' => ActionBehavior::Navigate, 'variant' => ActionVariant::Success, 'icon' => 'plus'],
+        Action::EDIT => ['behavior' => ActionBehavior::Navigate, 'variant' => ActionVariant::Secondary, 'icon' => 'pen'],
+        Action::DELETE => ['behavior' => ActionBehavior::Submit, 'variant' => ActionVariant::Danger, 'icon' => 'trash', 'method' => 'DELETE'],
+        Action::BATCH_DELETE => ['behavior' => ActionBehavior::Submit, 'variant' => ActionVariant::Danger, 'icon' => 'trash'],
     ];
 
     /**
@@ -81,6 +30,8 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
+                // the class of an icon by its name, eg. Tabler Icons: 'ti ti-%s'
+                ->scalarNode('icon_class')->defaultValue('bi bi-%s')->end()
                 ->arrayNode('templates')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -118,32 +69,29 @@ class Configuration implements ConfigurationInterface
 
     private function actionConfig(string $action): NodeDefinition
     {
+        $defaults = self::$actionConfig[$action];
+
         $treeBuilder = new TreeBuilder($action);
         $node = $treeBuilder->getRootNode();
-        $node->addDefaultsIfNotSet();
 
-        $current = $node->children();
-
-        foreach (self::$actionConfig[$action] as $name => $value) {
-            $this->addConfig($current, $name, $value);
-        }
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->enumNode('behavior')
+                    ->values(array_map(fn (ActionBehavior $behavior) => $behavior->value, ActionBehavior::cases()))
+                    ->defaultValue($defaults['behavior']->value)
+                ->end()
+                ->enumNode('variant')
+                    ->values(array_map(fn (ActionVariant $variant) => $variant->value, ActionVariant::cases()))
+                    ->defaultValue($defaults['variant']->value)
+                ->end()
+                ->scalarNode('method')->defaultValue($defaults['method'] ?? null)->end()
+                // the name of the icon (see icon_class)
+                ->scalarNode('icon')->defaultValue($defaults['icon'])->end()
+                ->scalarNode('confirmation')->defaultNull()->end()
+            ->end()
+        ;
 
         return $node;
-    }
-
-    private function addConfig(NodeBuilder $current, string $name, $value): void
-    {
-        if (is_array($value)) {
-            $node = $current->arrayNode($name)
-                ->addDefaultsIfNotSet()
-                ->ignoreExtraKeys(false)
-            ;
-
-            foreach ($value as $k => $v) {
-                $this->addConfig($node->children(), $k, $v);
-            }
-        } else {
-            $current->scalarNode($name)->defaultValue($value);
-        }
     }
 }

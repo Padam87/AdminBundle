@@ -2,6 +2,7 @@
 
 namespace Padam87\AdminBundle\Twig;
 
+use Padam87\AdminBundle\Config\IconClass;
 use Padam87\AdminBundle\Controller\AdminController;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -13,7 +14,7 @@ class AdminExtension extends AbstractExtension
      */
     private array $controllers = [];
 
-    public function __construct(iterable $controllers)
+    public function __construct(iterable $controllers, private IconClass $iconClass)
     {
         foreach ($controllers as $controller) {
             $this->controllers[$controller::class] = $controller;
@@ -26,6 +27,8 @@ class AdminExtension extends AbstractExtension
             new TwigFunction('admin', function (string $fqcn) {
                 return $this->controllers[$fqcn];
             }),
+            // the class of an icon by its name (see IconClass)
+            new TwigFunction('admin_icon_class', $this->iconClass),
         ];
     }
 }

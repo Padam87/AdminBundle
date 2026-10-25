@@ -9,11 +9,9 @@ use JMS\Serializer\Visitor\SerializationVisitorInterface;
 use Knp\Bundle\PaginatorBundle\Helper\Processor;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPaginationInterface;
 use Padam87\AdminBundle\Config\Action\Action;
-use Padam87\AdminBundle\Config\Action\SubmittedAction;
-use Padam87\AdminBundle\Config\AdminConfig;
+use Padam87\AdminBundle\Config\IconClass;
 use Padam87\AdminBundle\Config\Table\Column\BooleanColumn;
 use Padam87\AdminBundle\Config\Table\Column\Column;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -22,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * Adds the context dependent fields of admin table columns and actions (the rest is in their JMS metadata).
  *
  * Context attributes:
- * - `admin_config` (AdminConfig): required for actions
+ * - `admin_config` (AdminConfig): the admin of the actions
  * - `admin_entity` (object): the row of entity actions, omitted for global, batch and table actions
  * - `admin_pagination` (SlidingPaginationInterface): sort links of the columns, omitted when not needed
  */
@@ -35,8 +33,8 @@ class ListSerializer implements EventSubscriberInterface
     public function __construct(
         private TranslatorInterface $translator,
         private UrlGeneratorInterface $urlGenerator,
-        private PropertyAccessorInterface $propertyAccessor,
         private Processor $processor,
+        private IconClass $iconClass,
     ) {
     }
 
@@ -79,6 +77,9 @@ class ListSerializer implements EventSubscriberInterface
         }
     }
 
+    /**
+     * An action: name, title, url, enabled, behavior, method, variant, icon (its class), confirmation.
+     */
     public function serializeAction(ObjectEvent $event): void
     {
         /** @var Action $action */
@@ -90,38 +91,25 @@ class ListSerializer implements EventSubscriberInterface
             return;
         }
 
-        /** @var AdminConfig $config */
-        $config = $context->getAttribute(self::CONFIG);
         $entity = $context->hasAttribute(self::ENTITY) ? $context->getAttribute(self::ENTITY) : null;
 
-        $enabled = $entity === null || $action->isEnabledFor($entity);
-        $control = $action->getControl();
-        $attrs = $control->getAttributes();
-        $url = $this->urlGenerator->generate($action->getRouteName(), $action->getRouteParameters($entity));
+        $this->add($visitor, 'title', $this->trans($action->getTitle()));
+        $this->add($visitor, 'url', $this->urlGenerator->generate($action->getRouteName(), $action->getRouteParameters($entity)));
+        $this->add($visitor, 'enabled', $entity === null || $action->isEnabledFor($entity));
+        $this->add($visitor, 'behavior', $action->getBehavior()->value);
+        $this->add($visitor, 'method', $action->getMethod());
+        $this->add($visitor, 'variant', $action->getVariant()->value);
+        $this->add($visitor, 'icon', $action->getIcon() === null ? null : ($this->iconClass)($action->getIcon()));
+        $this->add($visitor, 'confirmation', $this->trans($action->getConfirmation()));
+    }
 
-        $attrs[$control->getTagName() === 'a' ? 'href' : 'formaction'] = $url;
-
-        if (!$enabled) {
-            $attrs['disabled'] = 'disabled';
-            $attrs['class'] = trim(($attrs['class'] ?? '') . ' disabled');
-        }
-
-        $title = $action->getTitle();
-
-        $this->add($visitor, 'enabled', $enabled);
-        $this->add($visitor, 'tag', $control->getTagName());
-        $this->add($visitor, 'attrs', $attrs);
-        $this->add($visitor, 'title', match (true) {
-            $title === null, $title === '' => null,
-            $title instanceof TranslatableInterface => $title->trans($this->translator),
-            default => $this->translator->trans($title),
-        });
-        $this->add($visitor, 'form', $action instanceof SubmittedAction ? [
-            'action' => $entity === null
-                ? null
-                : $this->urlGenerator->generate($config->getRouteNameForAction($action->getName()), ['id' => $this->propertyAccessor->getValue($entity, 'id')]),
-            'method' => $action->getMethod(),
-        ] : null);
+    private function trans(TranslatableInterface|string|null $message): ?string
+    {
+        return match (true) {
+            $message === null, $message === '' => null,
+            $message instanceof TranslatableInterface => $message->trans($this->translator),
+            default => $this->translator->trans($message),
+        };
     }
 
     private function add(SerializationVisitorInterface $visitor, string $name, mixed $value): void

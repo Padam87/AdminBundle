@@ -10,7 +10,6 @@ namespace App\Controller\Admin;
 use App\Entity\Product;
 use App\Form\ProductType;
 use Padam87\AdminBundle\Config\AdminConfig;
-use Padam87\AdminBundle\Config\HtmlElement;
 use Padam87\AdminBundle\Config\Table\Column\Column;
 use Padam87\AdminBundle\Config\Table\Table;
 use Padam87\AdminBundle\Controller\AdminController;
@@ -32,7 +31,7 @@ class ProductController extends AdminController
     protected function configure(AdminConfig $config): void
     {
         $config
-            ->setIcon(new HtmlElement('i', ['class' => 'bi bi-box'])) // adds an icon, usable in the theme for this module
+            ->setIcon('box') // adds an icon (its name, see icon_class), usable in the theme for this module
             ->setSingularName('product') // singular and plural names, inferred from the entity classname by default
             ->setPluralName('products')
         ;
@@ -75,8 +74,10 @@ protected function configure(AdminConfig $config): void
             Action::create('addToCart', Action::TYPE_ENTITY)
                 ->setRouteName('admin_product_addToCart')
                 ->setRouteParameters(fn($entity) => ['id' => $entity->getId()])
-                ->setControl(new HtmlElement('a', ['class' => 'btn btn-success']))
-                ->setIcon(new HtmlElement('i', ['class' => 'bi bi-cart-plus']))
+                ->setBehavior(ActionBehavior::Submit)
+                ->setVariant(ActionVariant::Success)
+                ->setIcon('cart-plus')
+                ->setConfirmation('Add it to the cart?')
                 ->setTitle('Add to cart')
                 ->setCondition(function (Product $product) {
                     return $product->isAvailable();
@@ -92,6 +93,36 @@ public function addToCart(Product $product)
 {
     // just a normal action, like you would to without this bundle
 }
+```
+
+#### Behaviors and variants
+
+`ActionBehavior` is how the action is requested (batch actions submit the selected entities, the batch form):
+
+ - `Navigate` the page goes to the url (default)
+ - `NewTab` the url opens in a new tab
+ - `Modal` the url is requested in an action modal (a JS rendered list): a form opens in the modal, a file is saved,
+   data updates the list. Rendered by twig it is a link with `data-action-behavior="modal"`
+ - `Submit` submitted, POST or the method of the action (`setMethod('DELETE')`)
+
+`ActionVariant` is the theme color of its button (`Primary`, `Secondary`, ... `Link`).
+
+Icons are names, the class is built by the `icon_class` option (Bootstrap Icons by default):
+
+```yaml
+padam87_admin:
+    icon_class: 'ti ti-%s' # Tabler Icons
+    actions:
+        edit: { icon: pencil }
+```
+
+The default actions are configured the same way (`behavior`, `variant`, `method`, `icon`, `confirmation`):
+
+```yaml
+padam87_admin:
+    actions:
+        create: { behavior: modal }
+        delete: { confirmation: 'Are you sure?' }
 ```
 
 #### Action types

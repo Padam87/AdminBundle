@@ -3,7 +3,6 @@
 namespace Padam87\AdminBundle\Config\Action;
 
 use JMS\Serializer\Annotation as Serializer;
-use Padam87\AdminBundle\Config\HtmlElement;
 use Symfony\Component\Translation\TranslatableMessage;
 use Twig\Template;
 
@@ -29,15 +28,20 @@ class Action
 
     private null|string|TranslatableMessage $title = null;
 
-    private HtmlElement $control;
+    private ActionBehavior $behavior = ActionBehavior::Navigate;
 
-    #[Serializer\Expose]
-    #[Serializer\SerializedName('icon')]
-    private ?HtmlElement $icon = null;
+    private ActionVariant $variant = ActionVariant::Secondary;
+
+    // the method of a submitted action (default POST), eg. DELETE
+    private ?string $method = null;
+
+    // the name of the icon (see IconClass)
+    private ?string $icon = null;
+
+    private null|string|TranslatableMessage $confirmation = null;
 
     public function __construct(private string $name,  private string $type)
     {
-        $this->control = new HtmlElement('a');
     }
 
     public static function create(string $name,  string $type): static
@@ -118,24 +122,63 @@ class Action
         return $this;
     }
 
-    public function getControl(): HtmlElement
+    public function getBehavior(): ActionBehavior
     {
-        return $this->control;
+        return $this->behavior;
     }
 
-    public function setControl(HtmlElement $control): self
+    public function setBehavior(ActionBehavior $behavior): self
     {
-        $this->control = $control;
+        $this->behavior = $behavior;
 
         return $this;
     }
 
-    public function getIcon(): ?HtmlElement
+    public function getVariant(): ActionVariant
+    {
+        return $this->variant;
+    }
+
+    public function setVariant(ActionVariant $variant): self
+    {
+        $this->variant = $variant;
+
+        return $this;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method ?? ($this->getBehavior() === ActionBehavior::Submit ? 'POST' : 'GET');
+    }
+
+    public function setMethod(?string $method): self
+    {
+        $this->method = $method === null ? null : strtoupper($method);
+
+        return $this;
+    }
+
+    public function getConfirmation(): TranslatableMessage|string|null
+    {
+        return $this->confirmation;
+    }
+
+    public function setConfirmation(TranslatableMessage|string|null $confirmation): self
+    {
+        $this->confirmation = $confirmation;
+
+        return $this;
+    }
+
+    public function getIcon(): ?string
     {
         return $this->icon;
     }
 
-    public function setIcon(?HtmlElement $icon): self
+    /**
+     * @param string|null $icon the name of the icon (see IconClass)
+     */
+    public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
 

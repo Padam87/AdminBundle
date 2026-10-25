@@ -20,7 +20,8 @@ class AdminConfig
 
     private RouteCollection $routes;
 
-    private ?HtmlElement $icon = null;
+    // the name of the icon (see IconClass)
+    private ?string $icon = null;
 
     private string|TranslatableMessage $singularName;
 
@@ -229,12 +230,15 @@ class AdminConfig
         return $this;
     }
 
-    public function getIcon(): ?HtmlElement
+    public function getIcon(): ?string
     {
         return $this->icon;
     }
 
-    public function setIcon(?HtmlElement $icon): self
+    /**
+     * @param string|null $icon the name of the icon (see IconClass)
+     */
+    public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
 

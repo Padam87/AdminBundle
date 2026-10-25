@@ -9,6 +9,7 @@ use Knp\Bundle\PaginatorBundle\Pagination\SlidingPaginationInterface;
 use Knp\Bundle\PaginatorBundle\Twig\Extension\PaginationRuntime;
 use Padam87\AdminBundle\Config\Action\Action;
 use Padam87\AdminBundle\Config\AdminConfig;
+use Padam87\AdminBundle\Config\IconClass;
 use Padam87\AdminBundle\Config\Table\Column\Column;
 use Padam87\AdminBundle\Config\Table\Column\CombinedColumn;
 use Padam87\AdminBundle\Config\Table\Column\TableColumn;
@@ -50,6 +51,7 @@ class ListBuilder
         private Processor $processor,
         private PaginationRuntime $paginationRuntime,
         private RequestStack $requestStack,
+        private IconClass $iconClass,
         private ?ListCustomizerInterface $customizer = null,
     ) {
     }
@@ -208,7 +210,7 @@ class ListBuilder
 
         return array_values(array_map(fn (array $group) => array_values(array_map(fn (FilterSet $set) => [
             'name' => $this->trans($set->getName()),
-            'icon' => $set->getIcon() === null ? null : $this->serializer->toArray($set->getIcon()),
+            'icon' => $set->getIcon() === null ? null : ($this->iconClass)($set->getIcon()),
             'url' => $this->urlGenerator->generate($route, ['sets' => array_merge($sets, [$set->getGroup() => $set->getKey()])]),
             'active' => ($sets[$set->getGroup()] ?? null) === $set->getKey(),
         ], $group)), $table->getFilterSets()));

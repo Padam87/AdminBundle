@@ -4,7 +4,8 @@ namespace Padam87\AdminBundle\Config;
 
 use Padam87\AdminBundle\Attribute\Admin;
 use Padam87\AdminBundle\Config\Action\Action;
-use Padam87\AdminBundle\Config\Action\SubmittedAction;
+use Padam87\AdminBundle\Config\Action\ActionBehavior;
+use Padam87\AdminBundle\Config\Action\ActionVariant;
 use Symfony\Component\Routing\Attribute\Route as RouteAttribute;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -44,39 +45,46 @@ class AdminConfigFactory
             ->setBaseRoute($this->getBaseRoute($controllerFqcn))
             ->setRoutes($this->getRoutes($controllerFqcn))
             ->addAction(
-                Action::create(Action::CREATE, Action::TYPE_GLOBAL)
+                $this->configureAction(Action::create(Action::CREATE, Action::TYPE_GLOBAL))
                     ->setTitle(new TranslatableMessage('admin.action.create', ['%entity%' => $this->translator->trans($config->getSingularName())], $this->config['translations']['domains']['action']))
                     ->setRouteName($config->getRouteNameForAction(Action::CREATE))
-                    ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::CREATE]['control']))
-                    ->setIcon(HtmlElement::fromConfiguration($this->config['actions'][Action::CREATE]['icon']))
             )
             ->addAction(
-                Action::create(Action::EDIT, Action::TYPE_ENTITY)
+                $this->configureAction(Action::create(Action::EDIT, Action::TYPE_ENTITY))
                     ->setTitle(new TranslatableMessage('admin.action.edit', [], $this->config['translations']['domains']['action']))
                     ->setRouteName($config->getRouteNameForAction(Action::EDIT))
                     ->setRouteParameters(fn($entity): array => ['id' => $entity->getId()])
-                    ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::EDIT]['control']))
-                    ->setIcon(HtmlElement::fromConfiguration($this->config['actions'][Action::EDIT]['icon']))
             )
             ->addAction(
-                SubmittedAction::create(Action::DELETE, Action::TYPE_ENTITY)
+                $this->configureAction(Action::create(Action::DELETE, Action::TYPE_ENTITY))
                     ->setTitle(new TranslatableMessage('admin.action.delete', [], $this->config['translations']['domains']['action']))
-                    ->setMethod('DELETE')
                     ->setRouteName($config->getRouteNameForAction(Action::DELETE))
                     ->setRouteParameters(fn($entity): array => ['id' => $entity->getId()])
-                    ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::DELETE]['control']))
-                    ->setIcon(HtmlElement::fromConfiguration($this->config['actions'][Action::DELETE]['icon']))
             )
             ->addAction(
-                Action::create(Action::BATCH_DELETE, Action::TYPE_BATCH)
+                $this->configureAction(Action::create(Action::BATCH_DELETE, Action::TYPE_BATCH))
                     ->setTitle(new TranslatableMessage('admin.action.batch_delete', [], $this->config['translations']['domains']['action']))
                     ->setRouteName($config->getRouteNameForAction(Action::BATCH_DELETE))
-                    ->setControl(HtmlElement::fromConfiguration($this->config['actions'][Action::BATCH_DELETE]['control']))
-                    ->setIcon(HtmlElement::fromConfiguration($this->config['actions'][Action::BATCH_DELETE]['icon']))
             )
         ;
 
         return $config;
+    }
+
+    /**
+     * A default action by the configuration (padam87_admin.actions).
+     */
+    private function configureAction(Action $action): Action
+    {
+        $config = $this->config['actions'][$action->getName()];
+
+        return $action
+            ->setBehavior(ActionBehavior::from($config['behavior']))
+            ->setVariant(ActionVariant::from($config['variant']))
+            ->setMethod($config['method'])
+            ->setIcon($config['icon'])
+            ->setConfirmation($config['confirmation'])
+        ;
     }
 
     protected function getBaseRoute(string $controllerFqcn): RouteAttribute

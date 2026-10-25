@@ -60,5 +60,6 @@ class Padam87AdminExtension extends Extension
         );
 
         $container->setParameter('padam87_admin.config', $config);
+        $container->setParameter('padam87_admin.icon_class', $config['icon_class']);
     }
 }

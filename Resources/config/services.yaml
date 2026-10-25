@@ -1,4 +1,8 @@
 services:
+  Padam87\AdminBundle\Config\IconClass:
+    arguments:
+      $format: '%padam87_admin.icon_class%'
+
   Padam87\AdminBundle\Config\AdminConfigFactory:
     arguments:
       $config: '%padam87_admin.config%'
@@ -30,4 +34,5 @@ services:
   Padam87\AdminBundle\Twig\AdminExtension:
     arguments:
       $controllers: !tagged_iterator padam87_admin.controller
+      $iconClass: '@Padam87\AdminBundle\Config\IconClass'
     tags: [twig.extension]

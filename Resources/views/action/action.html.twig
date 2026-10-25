@@ -2,20 +2,45 @@
 {# @var action \Padam87\AdminBundle\Config\Action\Action #}
 {# @var entity ?object #}
 
-{% set attr = action.control.attributes %}
-{% if entity is defined and not action.isEnabledFor(entity) %}
-    {% set attr = attr|merge({disabled: 'disabled'}) %}
-    {% set attr = attr|merge({class: attr.class|default('') ~ ' disabled'}) %}
-{% endif %}
+{#
+    By the behavior: links (navigate, new_tab, modal: a link with data-action-behavior="modal", for the JS of the page),
+    submit: a form (with _method), batch actions submit the batch form (form="batch").
+#}
 
-<{{ action.control.tagName }}
-    {{ action.control.tagName == 'a' ? 'href' : 'formaction' }}={{ path(action.routeName, action.routeParameters(entity ?? null)) }}
-    {% for name, value in attr %}{{ name }}="{{ value|escape('html_attr') }}"{% endfor %}
->
-{% if action.icon %}
-    {% include '@Padam87Admin/icon.html.twig' with { icon: action.icon } only %}
+{% set enabled = entity is not defined or action.isEnabledFor(entity) %}
+{% set url = path(action.routeName, action.routeParameters(entity ?? null)) %}
+
+{% set behavior = action.behavior.value %}
+{% set class = 'btn btn-' ~ action.variant.value ~ ' btn-icon' ~ (enabled ? '' : ' disabled') %}
+{% set confirmation = action.confirmation ? action.confirmation|trans : null %}
+{% set content %}
+    {% if action.icon %}
+        {% include '@Padam87Admin/icon.html.twig' with { icon: action.icon } only %}
+    {% endif %}
+    {% if action.title %}
+        {{ action.title|trans }}
+    {% endif %}
+{% endset %}
+
+{% if action.type == 'batch' %}
+    <button type="submit" form="batch" formaction="{{ url }}" formmethod="{{ action.method }}" class="{{ class }}" data-action-behavior="{{ behavior }}"
+        {% if behavior == 'new_tab' %}formtarget="_blank"{% endif %}
+        {% if confirmation %}data-confirmation="{{ confirmation }}"{% endif %}
+        {% if not enabled %}disabled{% endif %}
+    >{{ content }}</button>
+{% elseif behavior == 'submit' %}
+    <form method="POST" action="{{ url }}" style="display: inline-block;" data-action-behavior="submit">
+        {% if action.method != 'POST' %}
+            <input type="hidden" name="_method" value="{{ action.method }}" />
+        {% endif %}
+        <button type="submit" class="{{ class }}"
+            {% if confirmation %}data-confirmation="{{ confirmation }}"{% endif %}
+            {% if not enabled %}disabled{% endif %}
+        >{{ content }}</button>
+    </form>
+{% else %}
+    <a href="{{ url }}" class="{{ class }}" data-action-behavior="{{ behavior }}"
+        {% if behavior == 'new_tab' %}target="_blank"{% endif %}
+        {% if confirmation %}data-confirmation="{{ confirmation }}"{% endif %}
+    >{{ content }}</a>
 {% endif %}
-{% if action.title %}
-    {{ action.title|trans }}
-{% endif %}
-</{{ action.control.tagName }}>
