@@ -369,6 +369,9 @@ abstract class AdminController extends AbstractController
                 )
             );
 
+            // the failed flush closed the entity manager, the next deletes (batch delete) need a new one
+            $this->container->get('doctrine')->resetManager();
+
             return false;
         }
 
