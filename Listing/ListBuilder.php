@@ -13,11 +13,13 @@ use Padam87\AdminBundle\Config\Table\Column\Column;
 use Padam87\AdminBundle\Config\Table\Column\CombinedColumn;
 use Padam87\AdminBundle\Config\Table\Column\TableColumn;
 use Padam87\AdminBundle\Config\Table\Column\TwigColumn;
+use Padam87\AdminBundle\Config\Table\FilterSet;
 use Padam87\AdminBundle\Config\Table\Table;
 use Padam87\AdminBundle\Serializer\ListSerializer;
 use Symfony\Component\Form\ChoiceList\View\ChoiceGroupView;
 use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatableInterface;
@@ -47,6 +49,7 @@ class ListBuilder
         private SerializationContextFactoryInterface $contextFactory,
         private Processor $processor,
         private PaginationRuntime $paginationRuntime,
+        private RequestStack $requestStack,
         private ?ListCustomizerInterface $customizer = null,
     ) {
     }
@@ -78,6 +81,7 @@ class ListBuilder
                 Action::TYPE_TABLE => $this->actions($config, Action::TYPE_TABLE),
             ],
             'filters' => $filters !== null && count($filters->children) > 0 ? $this->filters($filters) : null,
+            'filterSets' => $this->filterSets($config, $table),
             'columns' => $this->columns($config, $table, $pagination),
             'rows' => $this->rows($config, $table, $pagination),
             'batch' => count($config->getActions(Action::TYPE_BATCH)) > 0,
@@ -190,6 +194,24 @@ class ListBuilder
         }
 
         return $cell;
+    }
+
+    /**
+     * Filter sets by group: the url applies the set (the sets of the other groups are kept), active while it is applied.
+     *
+     * @return array<array<array<string, mixed>>>
+     */
+    private function filterSets(AdminConfig $config, Table $table): array
+    {
+        $sets = $this->requestStack->getCurrentRequest()?->query->all('sets') ?? [];
+        $route = $config->getRouteNameForAction(Action::INDEX);
+
+        return array_values(array_map(fn (array $group) => array_values(array_map(fn (FilterSet $set) => [
+            'name' => $this->trans($set->getName()),
+            'icon' => $set->getIcon() === null ? null : $this->serializer->toArray($set->getIcon()),
+            'url' => $this->urlGenerator->generate($route, ['sets' => array_merge($sets, [$set->getGroup() => $set->getKey()])]),
+            'active' => ($sets[$set->getGroup()] ?? null) === $set->getKey(),
+        ], $group)), $table->getFilterSets()));
     }
 
     private function actions(AdminConfig $config, string $type, ?object $entity = null): array
