@@ -163,15 +163,19 @@ abstract class AdminController extends AbstractController
             $data = [];
 
             foreach ($request->query->all('sets') as $group => $key) {
-                $set = $table->getFilterSet($key, $group);
-                $data = array_merge($data, $set->getData());
+                // stale bookmarks and saved views can point to sets that no longer exist
+                $set = is_string($key) ? $table->getFilterSet($key, (string) $group) : null;
+
+                if ($set !== null) {
+                    $data = array_merge($data, $set->getData());
+                }
             }
 
             $filters->setData($data);
         } elseif ($request->query->has('set')) {
             // @deprecated Leave intact for BC
             $set = $table->getFilterSet($request->query->get('set'));
-            $filters->setData($set->getData());
+            $filters->setData($set?->getData() ?? []);
         } else {
             $filters->submit($this->editFilterData($request->query->all()));
         }

@@ -129,7 +129,7 @@ class Table
 
     public function getFilterSet(string $key, string $group = FilterSet::DEFAULT_GROUP): ?FilterSet
     {
-        return $this->filterSets[$group][$key];
+        return $this->filterSets[$group][$key] ?? null;
     }
 
     public function getPaginatorOptions(): array
